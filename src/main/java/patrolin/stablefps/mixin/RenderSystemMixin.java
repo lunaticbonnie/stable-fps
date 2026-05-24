@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.*;
-import patrolin.stablefps.StableFPS;
 
 @Debug(export = true)
 @Mixin(RenderSystem.class)
@@ -25,7 +24,7 @@ public class RenderSystemMixin {
 		double dt = 1.0 / target_fps;
 		double nextDrawTime = lastDrawTime + dt;
 		double now_s = Util.getNanos() / 1e9;
-		nextDrawTime = 0.999*nextDrawTime + 0.001*now_s;
+		nextDrawTime = 0.999*nextDrawTime + 0.001*now_s; // NOTE: bias towards current time
 		double remaining_timeout = nextDrawTime - now_s;
 		if (remaining_timeout < -1*dt) {
 			// NOTE: we fell too far behind, restart
