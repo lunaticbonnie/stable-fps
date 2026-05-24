@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "patrolin.stablefps.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"RenderSystemMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
