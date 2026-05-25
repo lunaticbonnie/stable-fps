@@ -50,7 +50,10 @@ def apply_overrides(src: str, dest: str, target_version: str):
 if __name__ == "__main__":
   args = sys.argv[1:]
   if len(args) != 1:
-    print("Usage: python change_version.py <target_version>")
+    if os.path.isdir("templates"):
+      versions = [v.rsplit("-", 1)[1][:-len(".zip")] for v in os.listdir("templates")]
+      print("versions: " + " ".join(sorted(versions)))
+    exit()
   target_version = args[0]
   clean_path("current")
   if target_version != "clean":
