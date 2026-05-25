@@ -5,7 +5,6 @@ import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.*;
 
-@Debug(export = true)
 @Mixin(RenderSystem.class)
 public class RenderSystemMixin {
 	@Shadow
@@ -19,7 +18,7 @@ public class RenderSystemMixin {
 	 * We would have to target and replace every single line anyway.
 	 */
 	@Overwrite
-    public static void limitDisplayFPS(int target_fps) {
+	public static void limitDisplayFPS(int target_fps) {
 		// NOTE: pretend that we are always running at a stable framerate by default
 		double dt = 1.0 / target_fps;
 		double nextDrawTime = lastDrawTime + dt;
