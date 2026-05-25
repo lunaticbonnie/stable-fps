@@ -13,6 +13,7 @@ def clean_path(path: str):
 def clean_template():
   clean_path("current/.github")
   clean_path("current/src/main/java/patrolin/stablefps/mixin/ExampleMixin.java")
+  clean_path("current/README.md")
 def apply_overrides(src: str, dest: str, target_version: str):
   if os.path.isdir(src):
     try:
