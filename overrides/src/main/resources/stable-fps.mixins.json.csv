@@ -1,1 +1,1 @@
-"ExampleMixin","FPSLimiterMixin"
+"ExampleMixin"; "FPSLimiterMixin", "AsyncInputMixin", "AsyncMouseInputMixin"

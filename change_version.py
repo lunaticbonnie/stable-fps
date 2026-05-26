@@ -1,4 +1,3 @@
-import csv
 import os
 import sys
 from zipfile import ZipFile
@@ -32,8 +31,10 @@ def apply_overrides(src: str, dest: str, target_version: str):
       with open(dest, "r", encoding="utf8") as dest_file:
         content = dest_file.read()
       with open(src, "r") as src_file:
-        for (match, replace) in csv.reader(src_file):
-          content = content.replace(match, replace, 1)
+        for line in src_file.readlines():
+          if not line.strip(): continue
+          left, right = line.split(";", 1)
+          content = content.replace(left, right, 1)
       with open(dest, "w") as dest_file:
         dest_file.write(content)
     else:
@@ -62,3 +63,4 @@ if __name__ == "__main__":
       z.extractall("current")
     clean_template()
     apply_overrides("overrides", "current", target_version)
+
