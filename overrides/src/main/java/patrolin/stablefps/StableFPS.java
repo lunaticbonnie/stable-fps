@@ -31,9 +31,7 @@ public class StableFPS implements ModInitializer {
 	}
 	// inputThread events
 	public static final BlockingQueue<InputThreadEvent> inputThread_events = new LinkedBlockingQueue<>();
-	public sealed interface InputThreadEvent permits GrabMouseEvent {
-		/*AsyncEventResult result = new AsyncEventResult();*/
-	}
+	public sealed interface InputThreadEvent permits GrabMouseEvent {}
 	public record GrabMouseEvent(long window, int input_mode, double x, double y) implements InputThreadEvent {}
 	// renderThread events
 	public static final BlockingQueue<RenderThreadEvent> renderThread_events = new LinkedBlockingQueue<>();

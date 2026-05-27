@@ -59,9 +59,9 @@ public class AsyncInputThreadMixin {
 		StableFPS.inputThread.start();
 		// wait for the window to be opened
 		try {
-				ready.await();
+			ready.await();
 		} catch (InterruptedException err) {
-				throw new RuntimeException(err);
+			throw new RuntimeException(err);
 		}
 		return window;
 	}
