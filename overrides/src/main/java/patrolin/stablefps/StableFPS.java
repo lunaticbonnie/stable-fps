@@ -21,30 +21,20 @@ public class StableFPS implements ModInitializer {
 		Object value = null;
 		final CountDownLatch ready = new CountDownLatch(1);
 		private Object await() {
-            try {
-                ready.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+			try {
+				ready.await();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 			return value;
-        }
+		}
 	}
 	// inputThread events
 	public static final BlockingQueue<InputThreadEvent> inputThread_events = new LinkedBlockingQueue<>();
-	public sealed interface InputThreadEvent permits GrabMouseEvent, GLFW_GetWindowMonitorEvent, GLFW_SetWindowMonitorEvent {
-		AsyncEventResult result = new AsyncEventResult();
+	public sealed interface InputThreadEvent permits GrabMouseEvent {
+		/*AsyncEventResult result = new AsyncEventResult();*/
 	}
 	public record GrabMouseEvent(long window, int input_mode, double x, double y) implements InputThreadEvent {}
-	public record GLFW_GetWindowMonitorEvent(long window) implements InputThreadEvent {
-		public void submit_result(long monitor) {
-			result.value = monitor;
-			result.ready.countDown();
-		}
-		public long wait_for_result() {
-			return (long)result.await();
-		}
-	}
-	public record GLFW_SetWindowMonitorEvent(long window, long monitor, int x, int y, int width, int height, int refresh_rate) implements InputThreadEvent {}
 	// renderThread events
 	public static final BlockingQueue<RenderThreadEvent> renderThread_events = new LinkedBlockingQueue<>();
 	public sealed interface RenderThreadEvent permits ResizeDisplayEvent {}
@@ -58,14 +48,5 @@ public class StableFPS implements ModInitializer {
 	public static void resizeDisplay(WindowEventHandler eventHandler) {
 		ResizeDisplayEvent event = new ResizeDisplayEvent(eventHandler);
 		renderThread_events.add(event);
-	}
-	public static long glfwGetWindowMonitor(long window) {
-		GLFW_GetWindowMonitorEvent event = new GLFW_GetWindowMonitorEvent(window);
-		inputThread_events.add(event);
-		return event.wait_for_result();
-	}
-	public static void glfwSetWindowMonitor(long window, long monitor, int x, int y, int width, int height, int refreshRate) {
-		GLFW_SetWindowMonitorEvent event = new GLFW_SetWindowMonitorEvent(window, monitor, x, y, width, height, refreshRate);
-		inputThread_events.add(event);
 	}
 }

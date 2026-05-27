@@ -46,20 +46,6 @@ public class AsyncInputThreadMixin {
 								GLFW.glfwSetCursorPos(e.window(), e.x(), e.y());
 								GLFW.glfwSetInputMode(e.window(), 208897, e.input_mode());
 								break;
-							case StableFPS.GLFW_GetWindowMonitorEvent e:
-								e.submit_result(GLFW.glfwGetWindowMonitor(window));
-								break;
-							case StableFPS.GLFW_SetWindowMonitorEvent e:
-								GLFW.glfwSetWindowMonitor(
-										e.window(),
-										e.monitor(),
-										e.x(),
-										e.y(),
-										e.width(),
-										e.height(),
-										e.refresh_rate()
-								);
-								break;
 						}
 					}
 					// poll events
@@ -72,27 +58,13 @@ public class AsyncInputThreadMixin {
 		}, "Async input thread");
 		StableFPS.inputThread.start();
 		// wait for the window to be opened
-        try {
-            ready.await();
-        } catch (InterruptedException err) {
-            throw new RuntimeException(err);
-        }
-        return window;
+		try {
+				ready.await();
+		} catch (InterruptedException err) {
+				throw new RuntimeException(err);
+		}
+		return window;
 	}
-	/*@Redirect(
-		method="setMode",
-		at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwGetWindowMonitor(J)J")
-	)
-	private static long glfwGetWindowMonitor(long window) {
-		return StableFPS.glfwGetWindowMonitor(window);
-	}
-	@Redirect(
-		method="setMode",
-		at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwSetWindowMonitor(JJIIIII)V")
-	)
-	private static void glfwSetWindowMonitor(long window, long monitor, int x, int y, int width, int height, int refreshRate) {
-		StableFPS.glfwSetWindowMonitor(window, monitor, x, y, width, height, refreshRate);
-	}*/
 	@Redirect(
 		method="onFramebufferResize",
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/WindowEventHandler;resizeDisplay()V")
