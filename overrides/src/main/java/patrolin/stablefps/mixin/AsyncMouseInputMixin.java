@@ -9,7 +9,7 @@ import patrolin.stablefps.StableFPS;
 public class AsyncMouseInputMixin {
 	/**
 	 * @author Patrolin
-	 * @reason Must run our async thread
+	 * @reason Must run on our inputThread
 	 */
 	@Overwrite
 	public static void grabOrReleaseMouse(long l, int i, double d, double e) {
