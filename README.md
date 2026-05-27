@@ -9,6 +9,6 @@ Minecraft mod to fix long-standing FPS stability issues.
 `ice run-client` or Open `./current` in IntelliJ IDEA
 Add `--tracy` to application args
 
-TODO: give the window focus??
+TODO: give the window focus?? - Window.setMode()?
 TODO: replace GLFW.glfwWindowShouldClose() with thread-safe boolean
 TODO: sodium compatibility?
