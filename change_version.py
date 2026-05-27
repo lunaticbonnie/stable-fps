@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from zipfile import ZipFile
 
@@ -34,7 +35,10 @@ def apply_overrides(src: str, dest: str, target_version: str):
         for line in src_file.readlines():
           if not line.strip(): continue
           left, right = line.split(";", 1)
-          content = content.replace(left, right, 1)
+          left = left.strip()
+          right = right.strip()
+          print(f"  '{left}' -> '{right}'")
+          content = re.sub(left, right, content, count=1)
       with open(dest, "w") as dest_file:
         dest_file.write(content)
     else:
@@ -63,4 +67,3 @@ if __name__ == "__main__":
       z.extractall("current")
     clean_template()
     apply_overrides("overrides", "current", target_version)
-

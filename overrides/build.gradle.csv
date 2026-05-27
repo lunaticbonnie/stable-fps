@@ -1,0 +1,2 @@
+it.options.release = .+; it.options.release = 25
+sourceCompatibility = .+; sourceCompatibility = JavaVersion.VERSION_25
