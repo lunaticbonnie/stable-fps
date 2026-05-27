@@ -8,3 +8,5 @@ Minecraft mod to fix long-standing FPS stability issues.
 `ice change-version <version>`
 `ice run-client` or Open `./current` in IntelliJ IDEA
 Add `--tracy` to application args
+
+TODO: give the window focus
