@@ -1,1 +1,1 @@
-"ExampleMixin"; "FPSLimiterMixin", "AsyncInputThreadMixin", "AsyncMouseInputMixin", "AsyncRenderThreadMixin"
+"ExampleMixin"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin"

@@ -4,7 +4,7 @@ import net.minecraft.client.FramerateLimiter;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(FramerateLimiter.class)
-public abstract class FPSLimiterMixin {
+public abstract class FramerateLimiterMixin {
 	@Shadow
 	private static long lastFrameTime;
 

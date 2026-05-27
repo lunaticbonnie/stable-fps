@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(RenderSystem.class)
-public class FPSLimiterMixin {
+public class FramerateLimiterMixin {
 	@Shadow
 	private static double lastDrawTime;
 

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import patrolin.stablefps.StableFPS;
 
 @Mixin(InputConstants.class)
-public class AsyncMouseInputMixin {
+public class InputConstantsMixin {
 	/**
 	 * @author Patrolin
 	 * @reason Must run on our inputThread
