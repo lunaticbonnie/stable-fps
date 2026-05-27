@@ -10,3 +10,4 @@ Minecraft mod to fix long-standing FPS stability issues.
 Add `--tracy` to application args
 
 TODO: give the window focus
+TODO: replace GLFW.glfwWindowShouldClose() with thread-safe boolean

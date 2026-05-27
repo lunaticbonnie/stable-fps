@@ -1,1 +1,2 @@
-"ExampleMixin"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin"
+"mixins": [^\]]+\]; "mixins": [], "client": ["ExampleMixin"]
+"ExampleMixin"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin", "RenderThreadMixin"

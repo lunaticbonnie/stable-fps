@@ -21,11 +21,6 @@ public class WindowMixin {
 	@Unique
 	private static volatile long window;
 
-	/**
-	 * @author Patrolin
-	 * @reason Minecraft does not poll quickly enough for high poll-rate mice,
-	 * so we have to run it on a new async thread instead.
-	 */
 	@Redirect(
 		method = "createGlfwWindow",
 		at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwCreateWindow(IILjava/lang/CharSequence;JJ)J")

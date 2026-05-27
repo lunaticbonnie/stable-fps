@@ -6,7 +6,9 @@ import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import patrolin.stablefps.StableFPS;
 
 import java.util.concurrent.CountDownLatch;
@@ -18,7 +20,7 @@ public class WindowMixin {
 	private static final CountDownLatch ready = new CountDownLatch(1);
 	@Unique
 	private static volatile long window;
-
+	
 	@Redirect(
 		method="<init>",
 		at=@At(value="INVOKE", target="Lorg/lwjgl/glfw/GLFW;glfwCreateWindow(IILjava/lang/CharSequence;JJ)J")
@@ -68,5 +70,23 @@ public class WindowMixin {
 	)
 	private void onFramebufferResize(WindowEventHandler eventHandler) {
 		StableFPS.resizeDisplay(eventHandler);
+	}
+
+	// render thread
+	@Inject(method="shouldClose", at=@At("HEAD"))
+	private void onRunTick(CallbackInfoReturnable<Boolean> cir) {
+		WindowEventHandler resize_eventHandler = null;
+		StableFPS.RenderThreadEvent event;
+		while ((event = StableFPS.renderThread_events.poll()) != null) {
+			switch (event) {
+			case StableFPS.ResizeDisplayEvent e:
+				resize_eventHandler = e.eventHandler();
+				break;
+			}
+		}
+		if (resize_eventHandler != null) {
+			/* NOTE: `this` must refer the `Window` for this to work */
+			resize_eventHandler.resizeDisplay();
+		}
 	}
 }

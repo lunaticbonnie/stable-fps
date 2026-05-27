@@ -68,6 +68,12 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
             content = re.sub(left, right, content, count=1)
         with open(dest.path, "w") as dest_file:
           dest_file.write(content)
+      elif src.name.endswith(".remove"):
+        dest.path = dest.path[:-len(".remove")]
+        try:
+          os.remove(dest.path)
+        except:
+          pass
       else:
         with open(dest.path, "w+") as dest_file:
           dest_file.write(src_file.read())
