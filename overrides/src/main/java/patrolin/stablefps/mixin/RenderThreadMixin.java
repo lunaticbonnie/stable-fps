@@ -17,17 +17,14 @@ public class RenderThreadMixin {
   // inputThread
   @WrapMethod(method="setScreen")
   private void setScreen(Screen screen, Operation<Void> original) {
-    StableFPS.LOGGER.info("setScreen()");
     StableFPS.runOnRenderThread(() -> original.call(screen));
   }
   @WrapMethod(method="selectLevel")
   private void selectLevel(String string, String string2, LevelSettings levelSettings, Operation<Void> original) {
-    StableFPS.LOGGER.info("selectLevel()");
     StableFPS.runOnRenderThread(() -> original.call(string, string2, levelSettings));
   }
   @WrapMethod(method="clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
   private void clearLevel(Screen screen, Operation<Void> original) {
-    StableFPS.LOGGER.info("clearLevel()");
     StableFPS.runOnRenderThread(() -> original.call(screen));
   }
   // renderThread
