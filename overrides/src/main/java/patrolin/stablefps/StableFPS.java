@@ -5,10 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.*;
 
 public class StableFPS implements ModInitializer {
 	@Override
@@ -19,7 +16,7 @@ public class StableFPS implements ModInitializer {
 	// window
 	public static volatile long window;
 	public static final CountDownLatch window_ready = new CountDownLatch(1);
-	public static AtomicBoolean shouldClose = new AtomicBoolean(false);
+	public static volatile boolean shouldClose = false;
 
 	// events
 	public static Thread inputThread = null;
@@ -46,8 +43,16 @@ public class StableFPS implements ModInitializer {
 	public record GrabMouseEvent(long window, int input_mode, double x, double y) implements InputThreadEvent {}
 	// renderThread events
 	public static final BlockingQueue<RenderThreadEvent> renderThread_events = new LinkedBlockingQueue<>();
-	public sealed interface RenderThreadEvent permits ResizeDisplayEvent {}
+	public sealed interface RenderThreadEvent permits ResizeDisplayEvent, RunOnRenderThreadEvent {}
 	public record ResizeDisplayEvent(WindowEventHandler eventHandler) implements RenderThreadEvent {}
+	public record RunOnRenderThreadEvent(Runnable callback) implements RenderThreadEvent {}
+	/*public static final class RunOnRenderThreadEvent implements RenderThreadEvent {
+		public Runnable callback;
+		RunOnRenderThreadEvent(Runnable callback) {
+			this.callback = callback;
+		}
+		public AsyncResult result = new AsyncResult();
+	}*/
 
 	// dispatch
 	public static void grabOrReleaseMouse(long window, int input_mode, double x, double y) {
@@ -58,4 +63,21 @@ public class StableFPS implements ModInitializer {
 		ResizeDisplayEvent event = new ResizeDisplayEvent(eventHandler);
 		renderThread_events.add(event);
 	}
+	public static void runOnRenderThread(Runnable callback) {
+		if (Thread.currentThread() == inputThread) {
+			RunOnRenderThreadEvent event = new RunOnRenderThreadEvent(callback);
+			renderThread_events.add(event);
+		} else {
+			callback.run();
+		}
+	}
+	/*public static void runOnRenderThreadSync(Runnable callback) {
+		if (Thread.currentThread() == inputThread) {
+			RunOnRenderThreadEvent event = new RunOnRenderThreadEvent(callback);
+			renderThread_events.add(event);
+			event.result.await();
+		} else {
+			callback.run();
+		}
+	}*/
 }

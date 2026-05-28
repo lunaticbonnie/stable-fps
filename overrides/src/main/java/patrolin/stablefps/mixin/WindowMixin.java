@@ -27,10 +27,11 @@ public class WindowMixin {
 				// open the window
 				StableFPS.window = GLFW.glfwCreateWindow(width, height, title, monitor, share);
 				StableFPS.window_ready.countDown();
-				while (!StableFPS.shouldClose.get()) {
+				while (!StableFPS.shouldClose) {
 					// handle inputThread events
 					StableFPS.InputThreadEvent event;
 					while ((event = StableFPS.inputThread_events.poll()) != null) {
+						StableFPS.LOGGER.info("inputThread_event");
 						switch (event) {
 							case StableFPS.GrabMouseEvent e:
 								GLFW.glfwSetCursorPos(e.window(), e.x(), e.y());
@@ -62,6 +63,7 @@ public class WindowMixin {
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/WindowEventHandler;resizeDisplay()V")
 	)
 	private void onFramebufferResize(WindowEventHandler eventHandler) {
+		System.exit(1);
 		StableFPS.resizeDisplay(eventHandler);
 	}
 }

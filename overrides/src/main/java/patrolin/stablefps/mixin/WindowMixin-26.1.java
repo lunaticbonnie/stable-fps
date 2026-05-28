@@ -29,7 +29,7 @@ public class WindowMixin {
 				// open the window
 				StableFPS.window = GLFW.glfwCreateWindow(width, height, title, monitor, share);
 				StableFPS.window_ready.countDown();
-				while (!StableFPS.shouldClose.get()) {
+				while (!StableFPS.shouldClose) {
 					// handle inputThread events
 					StableFPS.InputThreadEvent event;
 					while ((event = StableFPS.inputThread_events.poll()) != null) {
@@ -85,6 +85,6 @@ public class WindowMixin {
 			/* NOTE: `this` must refer the `Window` for this to work */
 			resize_eventHandler.resizeGui();
 		}
-		if (cir.getReturnValue()) StableFPS.shouldClose.set(true);
+		if (cir.getReturnValue()) StableFPS.shouldClose = true;
 	}
 }

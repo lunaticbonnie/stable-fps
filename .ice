@@ -8,6 +8,9 @@ run:
   $$GRADLEW runClient
 build:
   $$GRADLEW build
+run-version:
+  python change_version.py $$ARGS
+  $$GRADLEW runClient
 build-version:
   python change_version.py $$ARGS
   $$GRADLEW runClient
