@@ -11,8 +11,6 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 `ice run-client` or Open `./current` in IntelliJ IDEA
 Add `--tracy` to application args
 
-TODO: fix 1.20-1.21 not working
-
 TODO: replace GLFW.glfwWindowShouldClose() with thread-safe boolean
 
 TODO: sodium compatibility?
