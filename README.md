@@ -9,6 +9,8 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 Compatible with Sodium.
 
 ## dev
+Download https://github.com/Patrolin/justice
+Download Python 3
 `ice change-version <version>`
 `ice run-client` or Open `./current` in IntelliJ IDEA
 
