@@ -23,3 +23,4 @@ Run tracy
 
 ### TODO
 - Stop calling `glfwWaitEventsTimeout` in older `FramerateLimiterMixin`s
+- Rewrite to Java 8, so that CurseForge launcher, etc. can launch it with a lower java version than 21
