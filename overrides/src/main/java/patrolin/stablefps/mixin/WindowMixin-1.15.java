@@ -28,6 +28,7 @@ public class WindowMixin {
 			try {
 				// open the window
 				StableFPS.window = GLFW.glfwCreateWindow(width, height, title, monitor, share);
+				GLFW.glfwPollEvents(); /* NOTE: prevent race condition with initializing GLFW */
 				StableFPS.window_ready.countDown();
 				while (true) {
 					// handle inputThread events
