@@ -17,22 +17,27 @@ public class StableFPS implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	// window
-	public static AtomicBoolean shouldClose = new AtomicBoolean(false);
-	public static final CountDownLatch window_ready = new CountDownLatch(1);
 	public static volatile long window;
+	public static final CountDownLatch window_ready = new CountDownLatch(1);
+	public static AtomicBoolean shouldClose = new AtomicBoolean(false);
 
 	// events
 	public static Thread inputThread = null;
 	public static class AsyncResult {
-		Object value = null;
-		final CountDownLatch ready = new CountDownLatch(1);
-		private Object await() {
+		private Object value = null;
+		private final CountDownLatch ready = new CountDownLatch(1);
+		public void submit(Object value) {
+			ready.countDown();
+			this.value = value;
+		}
+		@SuppressWarnings("UnusedReturnValue")
+		public Object await() {
 			try {
 				ready.await();
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
-			return value;
+			return this.value;
 		}
 	}
 	// inputThread events

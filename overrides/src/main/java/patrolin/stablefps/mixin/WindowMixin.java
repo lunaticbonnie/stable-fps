@@ -41,6 +41,8 @@ public class WindowMixin {
 					// handle window events
 					GLFW.glfwPollEvents();
 				}
+				long end = System.nanoTime() + 1_000_000;
+				while (System.nanoTime() < end) GLFW.glfwPollEvents();
 			} catch (Exception err) {
 				StableFPS.LOGGER.error("", err);
 				System.exit(1);
@@ -50,6 +52,7 @@ public class WindowMixin {
 		// wait for the window to be opened
 		try {
 			StableFPS.window_ready.await();
+			Thread.sleep(100); /* NOTE: fabric(?) has a race condition in 1.14.4 */
 		} catch (InterruptedException err) {
 			throw new RuntimeException(err);
 		}

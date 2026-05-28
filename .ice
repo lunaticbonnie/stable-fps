@@ -8,3 +8,8 @@ run:
   $$GRADLEW runClient
 build:
   $$GRADLEW build
+build-version:
+  python change_version.py $$ARGS
+  $$GRADLEW runClient
+  $$GRADLEW build
+  cp current/build/libs/stable-fps-1.0.0.jar "dist/stable-fps-1.0.0+$$ARGS.jar"

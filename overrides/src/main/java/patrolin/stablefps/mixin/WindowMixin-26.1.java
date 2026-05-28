@@ -43,6 +43,8 @@ public class WindowMixin {
 					// handle window events
 					GLFW.glfwPollEvents();
 				}
+				long end = System.nanoTime() + 1_000_000;
+				while (System.nanoTime() < end) GLFW.glfwPollEvents();
 			} catch (Exception err) {
 				StableFPS.LOGGER.error("", err);
 				System.exit(1);
