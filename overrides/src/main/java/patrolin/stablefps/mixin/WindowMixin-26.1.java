@@ -4,23 +4,15 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.platform.WindowEventHandler;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import patrolin.stablefps.StableFPS;
 
-import java.util.concurrent.CountDownLatch;
-
 @Mixin(Window.class)
 public class WindowMixin {
-	// input thread
-	@Unique
-	private static final CountDownLatch ready = new CountDownLatch(1);
-	@Unique
-	private static volatile long window;
-
+	// inputThread
 	@Redirect(
 		method = "createGlfwWindow",
 		at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwCreateWindow(IILjava/lang/CharSequence;JJ)J")
@@ -35,9 +27,10 @@ public class WindowMixin {
 		StableFPS.inputThread = new Thread(() -> {
 			try {
 				// open the window
-				window = GLFW.glfwCreateWindow(width, height, title, monitor, share);
-				ready.countDown();
-				while (!GLFW.glfwWindowShouldClose(window)) {
+				StableFPS.window = GLFW.glfwCreateWindow(width, height, title, monitor, share);
+				StableFPS.window_ready.countDown();
+				while (!StableFPS.shouldClose.get()) {
+					// handle inputThread events
 					StableFPS.InputThreadEvent event;
 					while ((event = StableFPS.inputThread_events.poll()) != null) {
 						switch (event) {
@@ -47,7 +40,7 @@ public class WindowMixin {
 								break;
 						}
 					}
-					// poll events
+					// handle window events
 					GLFW.glfwPollEvents();
 				}
 			} catch (Exception err) {
@@ -58,13 +51,12 @@ public class WindowMixin {
 		StableFPS.inputThread.start();
 		// wait for the window to be opened
 		try {
-			ready.await();
+			StableFPS.window_ready.await();
 		} catch (InterruptedException err) {
 			throw new RuntimeException(err);
 		}
-		return window;
+		return StableFPS.window;
 	}
-
 	@Redirect(
 		method = "onFramebufferResize",
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/WindowEventHandler;resizeGui()V")
@@ -73,8 +65,8 @@ public class WindowMixin {
 		StableFPS.resizeDisplay(eventHandler);
 	}
 
-	// render thread
-	@Inject(method = "shouldClose", at = @At("HEAD"))
+	// renderThread
+	@Inject(method="shouldClose", at=@At("RETURN"))
 	private void onRunTick(CallbackInfoReturnable<Boolean> cir) {
 		WindowEventHandler resize_eventHandler = null;
 		StableFPS.RenderThreadEvent event;
@@ -91,5 +83,6 @@ public class WindowMixin {
 			/* NOTE: `this` must refer the `Window` for this to work */
 			resize_eventHandler.resizeGui();
 		}
+		if (cir.getReturnValue()) StableFPS.shouldClose.set(true);
 	}
 }
