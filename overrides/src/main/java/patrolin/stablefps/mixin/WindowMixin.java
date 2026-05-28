@@ -52,7 +52,6 @@ public class WindowMixin {
 		// wait for the window to be opened
 		try {
 			StableFPS.window_ready.await();
-			Thread.sleep(100); /* NOTE: fabric(?) has a race condition in 1.14.4 */
 		} catch (InterruptedException err) {
 			throw new RuntimeException(err);
 		}
