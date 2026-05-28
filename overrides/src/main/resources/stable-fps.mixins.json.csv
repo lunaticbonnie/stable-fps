@@ -1,2 +1,2 @@
 "mixins": [^\]]+\]; "mixins": [], "client": ["ExampleMixin"]
-"ExampleMixin"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin", "RenderThreadMixin", "MouseHandlerMixin"
+"ExampleMixin"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin", "MinecraftMixin", "MouseHandlerMixin"

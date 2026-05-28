@@ -39,8 +39,11 @@ public class StableFPS implements ModInitializer {
 	}
 	// inputThread events
 	public static final BlockingQueue<InputThreadEvent> inputThread_events = new LinkedBlockingQueue<>();
-	public sealed interface InputThreadEvent permits GrabMouseEvent {}
+	public sealed interface InputThreadEvent permits GrabMouseEvent, ShouldCloseEvent {}
 	public record GrabMouseEvent(long window, int input_mode, double x, double y) implements InputThreadEvent {}
+	public static final class ShouldCloseEvent implements InputThreadEvent {
+		public AsyncResult result = new AsyncResult();
+	}
 	// renderThread events
 	public static final BlockingQueue<RenderThreadEvent> renderThread_events = new LinkedBlockingQueue<>();
 	public sealed interface RenderThreadEvent permits ResizeDisplayEvent, RunOnRenderThreadEvent {}
@@ -58,6 +61,11 @@ public class StableFPS implements ModInitializer {
 	public static void grabOrReleaseMouse(long window, int input_mode, double x, double y) {
 		GrabMouseEvent event = new GrabMouseEvent(window, input_mode, x, y);
 		inputThread_events.add(event);
+	}
+	public static void shouldClose() {
+		ShouldCloseEvent event = new ShouldCloseEvent();
+		inputThread_events.add(event);
+		event.result.await();
 	}
 	public static void resizeDisplay(WindowEventHandler eventHandler) {
 		ResizeDisplayEvent event = new ResizeDisplayEvent(eventHandler);

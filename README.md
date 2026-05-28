@@ -20,3 +20,6 @@ Add `--tracy` to application args
 Run tracy
 - Check if protocol version matches, else download different version of tracy...
 - Connect
+
+### TODO
+Make sure 26.x doesn't have errors when exiting!

@@ -14,6 +14,7 @@ run-version:
   $$GRADLEW runClient
 build-version:
   $$GRADLEW --stop
+  $$GRADLEW --stop
   python change_version.py $$ARGS
   $$GRADLEW runClient
   $$GRADLEW build

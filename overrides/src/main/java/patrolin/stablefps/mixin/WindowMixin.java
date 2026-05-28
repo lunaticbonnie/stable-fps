@@ -27,7 +27,7 @@ public class WindowMixin {
 				// open the window
 				StableFPS.window = GLFW.glfwCreateWindow(width, height, title, monitor, share);
 				StableFPS.window_ready.countDown();
-				while (!StableFPS.shouldClose) {
+				while (true) {
 					// handle inputThread events
 					StableFPS.InputThreadEvent event;
 					while ((event = StableFPS.inputThread_events.poll()) != null) {
@@ -36,21 +36,17 @@ public class WindowMixin {
 								GLFW.glfwSetCursorPos(e.window(), e.x(), e.y());
 								GLFW.glfwSetInputMode(e.window(), 208897, e.input_mode());
 								break;
+							case StableFPS.ShouldCloseEvent e:
+								e.result.submit(null);
+								return;
 						}
 					}
 					// handle window events
 					GLFW.glfwPollEvents();
 				}
 			} catch (Exception err) {
-        try {
-          Thread.sleep(16);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-				if (!StableFPS.shouldClose) {
-					StableFPS.LOGGER.error("", err);
-					System.exit(1);
-				}
+				StableFPS.LOGGER.error("", err);
+				System.exit(1);
 			}
 		}, "Async input thread");
 		StableFPS.inputThread.start();
