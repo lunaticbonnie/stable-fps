@@ -22,4 +22,4 @@ Run tracy
 - Connect
 
 ### TODO
-Make sure 26.x doesn't have errors when exiting!
+- Stop calling `glfwWaitEventsTimeout` in older `FramerateLimiterMixin`s

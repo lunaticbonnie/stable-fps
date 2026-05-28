@@ -30,7 +30,7 @@ public abstract class FramerateLimiterMixin {
 		long sleep_ms = remaining_ns / 1_000_000L;
 		try {
 			if (sleep_ms > 0) Thread.sleep(sleep_ms);
-		} catch (InterruptedException _) {}
+		} catch (InterruptedException ignored) {}
 		while (nextDrawTime - System.nanoTime() > 0) {
 			Thread.onSpinWait();
 		}
