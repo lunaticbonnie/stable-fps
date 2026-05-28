@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StableFPS implements ModInitializer {
 	@Override
@@ -15,9 +16,14 @@ public class StableFPS implements ModInitializer {
 	public static final String MOD_ID = "stable-fps";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
+	// window
+	public static AtomicBoolean shouldClose = new AtomicBoolean(false);
+	public static final CountDownLatch window_ready = new CountDownLatch(1);
+	public static volatile long window;
+
 	// events
 	public static Thread inputThread = null;
-	public static class AsyncEventResult {
+	public static class AsyncResult {
 		Object value = null;
 		final CountDownLatch ready = new CountDownLatch(1);
 		private Object await() {
