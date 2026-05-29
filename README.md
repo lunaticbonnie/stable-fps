@@ -8,6 +8,8 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 
 Compatible with Sodium.
 
+Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps).
+
 ## dev
 Download https://github.com/Patrolin/justice
 Download Python 3
