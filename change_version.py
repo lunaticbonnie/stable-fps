@@ -36,6 +36,8 @@ class PathInfo:
       file_name = (file_name[:match.start(0)] + file_name[match.start(2):])
     return PathInfo(file_path, file_name, file_version)
 
+def parse_version(version: str) -> int:
+  return [int(x) for x in version.split(".")]
 def apply_overrides(src: PathInfo, dest: PathInfo):
   if os.path.isdir(src.path):
     # make directory
@@ -52,7 +54,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
     # apply file override
     src_file = open(src.path, "r")
     print(src, dest)
-    if src.version == "" or dest.version >= src.version:
+    if src.version == "" or parse_version(dest.version) >= parse_version(src.version):
       if src.name.endswith(".csv"):
         dest.path = dest.path[:-len(".csv")]
         content = ""
@@ -84,7 +86,7 @@ if __name__ == "__main__":
   if len(args) != 1:
     if os.path.isdir("templates"):
       versions = [v.rsplit("-", 1)[1][:-len(".zip")] for v in os.listdir("templates")]
-      print("versions: " + " ".join(sorted(versions, key=lambda version: [int(x) for x in version.split(".")])))
+      print("versions: " + " ".join(sorted(versions, key=parse_version)))
     exit()
   target_version = args[0]
   clean_path("current")
