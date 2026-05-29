@@ -1,7 +1,6 @@
 package patrolin.stablefps.mixin;
 
 import com.mojang.blaze3d.platform.Window;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(Window.class)
@@ -38,7 +37,7 @@ public abstract class FramerateLimiterMixin {
 			if (sleep_ms > 0) Thread.sleep(sleep_ms);
 		} catch (InterruptedException ignored) {}
 		while (nextDrawTime - System.nanoTime() > 0) {
-			Thread.onSpinWait();
+			/*Thread.onSpinWait(); // Java 9+*/
 		}
 		lastFrameTime = nextDrawTime;
 		lastDrawTime = nextDrawTime*1e-9;

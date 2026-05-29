@@ -1,2 +1,2 @@
-it.options.release = .+; it.options.release = 21
-sourceCompatibility = .+; sourceCompatibility = JavaVersion.VERSION_21
+it.options.release = .+; it.options.release = 8
+sourceCompatibility = .+; sourceCompatibility = JavaVersion.VERSION_1_8

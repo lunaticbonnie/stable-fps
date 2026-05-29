@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import patrolin.stablefps.StableFPS;
+import patrolin.stablefps.StableFPS.InputThreadEvent;
+import patrolin.stablefps.StableFPS.GrabMouseEvent;
+import patrolin.stablefps.StableFPS.ShouldCloseEvent;
 
 @Mixin(Window.class)
 public class WindowMixin {
@@ -30,14 +33,17 @@ public class WindowMixin {
 				StableFPS.window_ready.countDown();
 				while (true) {
 					// handle inputThread events
-					StableFPS.InputThreadEvent event;
+					InputThreadEvent event;
 					while ((event = StableFPS.inputThread_events.poll()) != null) {
-						switch (event) {
-							case StableFPS.GrabMouseEvent e:
-								GLFW.glfwSetCursorPos(e.window(), e.x(), e.y());
-								GLFW.glfwSetInputMode(e.window(), 208897, e.input_mode());
+						switch (event.type) {
+							case InputThreadEvent.GRAB_MOUSE_EVENT: {
+								GrabMouseEvent e = (GrabMouseEvent)event;
+								GLFW.glfwSetCursorPos(e.window, e.x, e.y);
+								GLFW.glfwSetInputMode(e.window, 208897, e.input_mode);
 								break;
-							case StableFPS.ShouldCloseEvent e:
+							}
+							case InputThreadEvent.SHOULD_CLOSE_EVENT:
+								ShouldCloseEvent e = (ShouldCloseEvent)event;
 								e.result.submit(null);
 								return;
 						}
@@ -64,7 +70,6 @@ public class WindowMixin {
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/WindowEventHandler;resizeDisplay()V")
 	)
 	private void onFramebufferResize(WindowEventHandler eventHandler) {
-		System.exit(1);
 		StableFPS.resizeDisplay(eventHandler);
 	}
 }

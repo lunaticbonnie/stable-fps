@@ -1,7 +1,6 @@
 package patrolin.stablefps.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(RenderSystem.class)
