@@ -84,7 +84,7 @@ if __name__ == "__main__":
   if len(args) != 1:
     if os.path.isdir("templates"):
       versions = [v.rsplit("-", 1)[1][:-len(".zip")] for v in os.listdir("templates")]
-      print("versions: " + " ".join(sorted(versions)))
+      print("versions: " + " ".join(sorted(versions, key=lambda version: [int(x) for x in version.split(".")])))
     exit()
   target_version = args[0]
   clean_path("current")
