@@ -1,5 +1,5 @@
 "CC0-1\.0"; "MIT"
 "description": [^\n]+; "description": "Minecraft mod to fix long-standing FPS stability issues.",
 "Me!"; "Patrolin"
-"homepage": [^\n]+;
-"sources": [^\n]+; "sources": "https://github.com/lunaticbonnie/stable-fps"
+"homepage": [^\n]+; "homepage": "https://www.curseforge.com/minecraft/mc-mods/stable-fps",
+"sources": [^\n]+; "issues": "https://github.com/lunaticbonnie/stable-fps/issues"
