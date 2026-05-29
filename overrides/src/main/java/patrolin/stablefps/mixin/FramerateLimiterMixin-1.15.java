@@ -34,7 +34,7 @@ public class FramerateLimiterMixin {
 			if (sleep_ms > 0) Thread.sleep(sleep_ms);
 		} catch (InterruptedException ignored) {}
 		while (nextDrawTime - System.nanoTime() > 0) {
-			Thread.onSpinWait();
+			/*Thread.onSpinWait(); // Java 9+*/
 		}
 		lastFrameTime = nextDrawTime;
 		lastDrawTime = nextDrawTime*1e-9;

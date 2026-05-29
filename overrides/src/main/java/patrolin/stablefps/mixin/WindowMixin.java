@@ -42,10 +42,11 @@ public class WindowMixin {
 								GLFW.glfwSetInputMode(e.window, 208897, e.input_mode);
 								break;
 							}
-							case InputThreadEvent.SHOULD_CLOSE_EVENT:
+							case InputThreadEvent.SHOULD_CLOSE_EVENT: {
 								ShouldCloseEvent e = (ShouldCloseEvent)event;
 								e.result.submit(null);
 								return;
+							}
 						}
 					}
 					// handle window events

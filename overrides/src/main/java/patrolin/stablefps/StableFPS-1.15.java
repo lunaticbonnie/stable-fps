@@ -38,28 +38,65 @@ public class StableFPS implements ModInitializer {
 	}
 	// inputThread events
 	public static final BlockingQueue<InputThreadEvent> inputThread_events = new LinkedBlockingQueue<>();
-	public sealed interface InputThreadEvent permits GrabMouseEvent, ShouldCloseEvent {}
-	public record GrabMouseEvent(long window, int input_mode, double x, double y) implements InputThreadEvent {}
-	public static final class ShouldCloseEvent implements InputThreadEvent {
+	public static class InputThreadEvent {
+		public static final int GRAB_MOUSE_EVENT = 0;
+		public static final int SHOULD_CLOSE_EVENT = 1;
+		public int type;
+		InputThreadEvent(int type) {
+			this.type = type;
+		}
+		void add() {
+			inputThread_events.add(this);
+		}
+	}
+	public static class GrabMouseEvent extends InputThreadEvent {
+		public long window; public int input_mode; public double x; public double y;
+		GrabMouseEvent(long window, int input_mode, double x, double y) {
+			super(InputThreadEvent.GRAB_MOUSE_EVENT);
+			this.window = window;
+			this.input_mode = input_mode;
+			this.x = x;
+			this.y = y;
+		}
+	}
+	public static class ShouldCloseEvent extends InputThreadEvent {
+		ShouldCloseEvent() {
+			super(InputThreadEvent.SHOULD_CLOSE_EVENT);
+		}
 		public AsyncResult result = new AsyncResult();
 	}
 	// renderThread events
 	public static final BlockingQueue<RenderThreadEvent> renderThread_events = new LinkedBlockingQueue<>();
-	public sealed interface RenderThreadEvent permits ResizeDisplayEvent {}
-	public record ResizeDisplayEvent(WindowEventHandler eventHandler) implements RenderThreadEvent {}
+	public static class RenderThreadEvent {
+		public static final int RESIZE_DISPLAY_EVENT = 0;
+		public int type;
+		RenderThreadEvent(int type) {
+			this.type = type;
+		}
+		void add() {
+			renderThread_events.add(this);
+		}
+	}
+	public static class ResizeDisplayEvent extends RenderThreadEvent {
+		public WindowEventHandler eventHandler;
+		ResizeDisplayEvent(WindowEventHandler eventHandler) {
+			super(RenderThreadEvent.RESIZE_DISPLAY_EVENT);
+			this.eventHandler = eventHandler;
+		}
+	}
 
 	// dispatch
 	public static void grabOrReleaseMouse(long window, int input_mode, double x, double y) {
 		GrabMouseEvent event = new GrabMouseEvent(window, input_mode, x, y);
-		inputThread_events.add(event);
+		event.add();
 	}
 	public static void shouldClose() {
 		ShouldCloseEvent event = new ShouldCloseEvent();
-		inputThread_events.add(event);
+		event.add();
 		event.result.await();
 	}
 	public static void resizeDisplay(WindowEventHandler eventHandler) {
 		ResizeDisplayEvent event = new ResizeDisplayEvent(eventHandler);
-		renderThread_events.add(event);
+		event.add();
 	}
 }

@@ -9,6 +9,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import patrolin.stablefps.StableFPS;
+import patrolin.stablefps.StableFPS.RenderThreadEvent;
+import patrolin.stablefps.StableFPS.ResizeDisplayEvent;
+import patrolin.stablefps.StableFPS.GrabMouseEvent;
+import patrolin.stablefps.StableFPS.ShouldCloseEvent;
+import patrolin.stablefps.StableFPS.InputThreadEvent;
 
 @Mixin(Window.class)
 public class WindowMixin {
@@ -32,16 +37,20 @@ public class WindowMixin {
 				StableFPS.window_ready.countDown();
 				while (true) {
 					// handle inputThread events
-					StableFPS.InputThreadEvent event;
+					InputThreadEvent event;
 					while ((event = StableFPS.inputThread_events.poll()) != null) {
-						switch (event) {
-							case StableFPS.GrabMouseEvent e:
-								GLFW.glfwSetCursorPos(e.window(), e.x(), e.y());
-								GLFW.glfwSetInputMode(e.window(), 208897, e.input_mode());
+						switch (event.type) {
+							case InputThreadEvent.GRAB_MOUSE_EVENT: {
+								GrabMouseEvent e = (GrabMouseEvent)event;
+								GLFW.glfwSetCursorPos(e.window, e.x, e.y);
+								GLFW.glfwSetInputMode(e.window, 208897, e.input_mode);
 								break;
-							case StableFPS.ShouldCloseEvent e:
+							}
+							case InputThreadEvent.SHOULD_CLOSE_EVENT: {
+								ShouldCloseEvent e = (ShouldCloseEvent) event;
 								e.result.submit(null);
 								return;
+							}
 						}
 					}
 					// handle window events
@@ -73,12 +82,14 @@ public class WindowMixin {
 	@Inject(method="shouldClose", at=@At("HEAD"))
 	private void onRunTick(CallbackInfoReturnable<Boolean> cir) {
 		WindowEventHandler resize_eventHandler = null;
-		StableFPS.RenderThreadEvent event;
+		RenderThreadEvent event;
 		while ((event = StableFPS.renderThread_events.poll()) != null) {
-			switch (event) {
-			case StableFPS.ResizeDisplayEvent e:
-				resize_eventHandler = e.eventHandler();
-				break;
+			switch (event.type) {
+				case RenderThreadEvent.RESIZE_DISPLAY_EVENT: {
+					ResizeDisplayEvent e = (ResizeDisplayEvent) event;
+					resize_eventHandler = e.eventHandler;
+					break;
+				}
 			}
 		}
 		if (resize_eventHandler != null) {
