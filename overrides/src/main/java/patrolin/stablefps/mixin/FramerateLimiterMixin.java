@@ -6,6 +6,8 @@ import org.spongepowered.asm.mixin.*;
 
 @Mixin(Window.class)
 public abstract class FramerateLimiterMixin {
+	@Unique
+	private static long lastFrameTime;
 	@Shadow
 	private double lastDrawTime;
 	@Shadow
@@ -22,20 +24,23 @@ public abstract class FramerateLimiterMixin {
 	public void limitDisplayFPS() {
 		int target_fps = this.getFramerateLimit();
 		// NOTE: pretend that we are always running at a stable framerate by default
-		double dt = (1.0 / target_fps) + 1e-9;
-		double nextDrawTime = lastDrawTime + dt;
-		double now_s = System.nanoTime() / 1e9;
-		double remaining_s = nextDrawTime - now_s;
-		if (remaining_s < -dt) {
+		long dt = (1_000_000_000L / target_fps) + 1;
+		long nextDrawTime = lastFrameTime + dt;
+		long now_ns = System.nanoTime();
+		long remaining_ns = nextDrawTime - now_ns;
+		if (remaining_ns < -dt) {
 			/* NOTE: we fell too far behind, restart */
-			nextDrawTime = now_s;
+			nextDrawTime = now_ns;
 		}
 		// wait until the correct time
-		do {
-			/* NOTE: wait for OS input events with a positive timeout, or zero timeout if we're behind */
-			GLFW.glfwWaitEventsTimeout(Math.max(remaining_s, 0));
-			remaining_s = nextDrawTime - (System.nanoTime() / 1e9);
-		} while (remaining_s > 0);
-		lastDrawTime = nextDrawTime;
+		long sleep_ms = remaining_ns / 1_000_000L;
+		try {
+			if (sleep_ms > 0) Thread.sleep(sleep_ms);
+		} catch (InterruptedException ignored) {}
+		while (nextDrawTime - System.nanoTime() > 0) {
+			Thread.onSpinWait();
+		}
+		lastFrameTime = nextDrawTime;
+		lastDrawTime = nextDrawTime*1e-9;
 	}
 }
