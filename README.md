@@ -8,6 +8,8 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 
 Compatible with Sodium.
 
+NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those...
+
 Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps).
 
 ## dev
@@ -23,6 +25,12 @@ Add `--tracy` to application args
 Run tracy
 - Check if protocol version matches, else download different version of tracy...
 - Connect
+
+## java versions
+Java 25 for Minecraft 26.1 and later
+Java 21 for Minecraft 1.20.5 to 1.21.11
+Java 17 for Minecraft 1.17 to 1.20.4
+Java 8 for Minecraft 1.16 and earlier
 
 ### TODO
 - Rewrite to Java 8, so that CurseForge launcher, etc. can launch it with a lower java version than 21
