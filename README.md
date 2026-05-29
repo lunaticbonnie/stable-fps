@@ -11,6 +11,7 @@ Compatible with Sodium.
 ## dev
 Download https://github.com/Patrolin/justice
 Download Python 3
+Download mod templates from https://fabricmc.net/develop/template/ into `templates/*` for all Minecraft versions
 `ice change-version <version>`
 `ice run-client` or Open `./current` in IntelliJ IDEA
 
