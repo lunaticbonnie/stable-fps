@@ -16,6 +16,10 @@ Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fp
 Download https://github.com/Patrolin/justice
 Download Python 3
 Download mod templates from https://fabricmc.net/develop/template/ into `templates/*` for all Minecraft versions
+    Mod Name="Stable FPS"
+    Package Name="patrolin.stablefps"
+    Minecraft Version=...
+    Split client and common sources=false
 `ice change-version <version>`
 `ice run-client` or Open `./current` in IntelliJ IDEA
 

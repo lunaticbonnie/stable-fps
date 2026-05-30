@@ -29,15 +29,28 @@ class PathInfo:
   def plus_versioned(self, name: str):
     file_path = f"{self.path}/{name}"
     file_name = file_path.rsplit("/", 1)[-1]
-    match = re.search(r"-(\d+(?:\.\d+)+)(\.[^.]+)?$", file_name)
+    match = re.search(r"([+-]\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+)?)(\.[^.]+)?$", file_name)
     file_version = ""
     if match != None:
       file_version = match.group(1)
       file_name = (file_name[:match.start(0)] + file_name[match.start(2):])
     return PathInfo(file_path, file_name, file_version)
-
+# version strings
 def parse_version(version: str) -> int:
-  return [int(x) for x in version.split(".")]
+  return [int(x) for x in version[1:].split("-", 1)[0].split(".")]
+def compare_version(src_version: str, dest_version: str):
+  if src_version.startswith("-"):
+    src_version = src_version[1:]
+    split = src_version.split("-", 1)
+    if len(split) == 2:
+      from_version, to_version = split
+      print(f"COMPARE '{from_version}' - '{to_version}'")
+      return dest_version >= from_version and dest_version <= to_version
+    else:
+      return dest_version >= src_version
+  else:
+    raise ValueError(f"Invalid src_version: '{src_version}'")
+
 def apply_overrides(src: PathInfo, dest: PathInfo):
   if os.path.isdir(src.path):
     # make directory
@@ -54,7 +67,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
     # apply file override
     src_file = open(src.path, "r")
     print(src, dest)
-    if src.version == "" or parse_version(dest.version) >= parse_version(src.version):
+    if src.version == "" or compare_version(src.version, dest.version):
       if src.name.endswith(".csv"):
         dest.path = dest.path[:-len(".csv")]
         content = ""
