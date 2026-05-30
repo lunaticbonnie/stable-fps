@@ -35,6 +35,3 @@ Java 25 for Minecraft 26.1 and later
 Java 21 for Minecraft 1.20.5 to 1.21.11
 Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
-
-### TODO
-- Rewrite to Java 8, so that CurseForge launcher, etc. can launch it with a lower java version than 21
