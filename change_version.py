@@ -46,7 +46,6 @@ def compare_version(src_version: str, dest_version: str):
     split = src_version.split("-", 1)
     if len(split) == 2:
       from_version, to_version = split
-      print(f"COMPARE '{from_version}' - '{to_version}'")
       return dest_version >= parse_version(from_version) and dest_version <= parse_version(to_version)
     else:
       return dest_version >= parse_version(src_version)
