@@ -37,17 +37,19 @@ class PathInfo:
     return PathInfo(file_path, file_name, file_version)
 # version strings
 def parse_version(version: str) -> int:
-  return [int(x) for x in version[1:].split("-", 1)[0].split(".")]
+  if version[0] == "-" or version[0] == "+": version = version[1:]
+  return [int(x) for x in version.split("-", 1)[0].split(".")]
 def compare_version(src_version: str, dest_version: str):
+  dest_version = parse_version(dest_version)
   if src_version.startswith("-"):
     src_version = src_version[1:]
     split = src_version.split("-", 1)
     if len(split) == 2:
       from_version, to_version = split
       print(f"COMPARE '{from_version}' - '{to_version}'")
-      return dest_version >= from_version and dest_version <= to_version
+      return dest_version >= parse_version(from_version) and dest_version <= parse_version(to_version)
     else:
-      return dest_version >= src_version
+      return dest_version >= parse_version(src_version)
   else:
     raise ValueError(f"Invalid src_version: '{src_version}'")
 
