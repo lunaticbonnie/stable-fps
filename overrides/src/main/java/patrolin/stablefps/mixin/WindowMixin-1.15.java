@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import patrolin.stablefps.StableFPS;
-import patrolin.stablefps.StableFPS.RenderThreadEvent;
-import patrolin.stablefps.StableFPS.ResizeDisplayEvent;
+import patrolin.stablefps.StableFPS.InputThreadEvent;
 import patrolin.stablefps.StableFPS.GrabMouseEvent;
 import patrolin.stablefps.StableFPS.ShouldCloseEvent;
-import patrolin.stablefps.StableFPS.InputThreadEvent;
+import patrolin.stablefps.StableFPS.RenderThreadEvent;
+import patrolin.stablefps.StableFPS.ResizeDisplayEvent;
 
 @Mixin(Window.class)
 public class WindowMixin {
