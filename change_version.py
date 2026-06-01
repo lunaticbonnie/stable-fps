@@ -60,7 +60,7 @@ def parse_version(file_version: str) -> Version:
   split = file_version.split("-", 1)
   numbers = [int(x) for x in split[0].split(".")]
   return Version(modloader, comparison, numbers, split[1] if len(split) > 1 else "")
-def compare_versions(src_version_string: str, dest_version_string: str) -> bool:
+def version_matches(src_version_string: str, dest_version_string: str) -> bool:
   if src_version_string == "": return True
   dest_ver = parse_version(dest_version_string)
   from_ver = parse_version(src_version_string)
@@ -90,7 +90,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
   else:
     # apply file override
     src_file = open(src.path, "r")
-    if compare_versions(src.version, dest.version):
+    if version_matches(src.version, dest.version):
       if src.name.endswith(".csv"):
         dest.path = dest.path[:-len(".csv")]
         content = ""
