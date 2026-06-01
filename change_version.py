@@ -28,17 +28,23 @@ class PathInfo:
     return PathInfo(f"{self.path}/{name}", name, self.version)
   def plus_versioned(self, file_name: str):
     file_path = f"{self.path}/{file_name}"
-    file_name, version = version_from_string(file_name)
-    return PathInfo(file_path, file_name, version)
-# version strings
-def version_from_string(file_name: str) -> tuple[str, str]:
+    file_name, file_version = split_version_string(file_name)
+    return PathInfo(file_path, file_name, file_version)
+
+@dataclass
+class Version:
+  modloader: str
+  comparison: str
+  numbers: list[int]
+  continued: str
+def split_version_string(file_name: str) -> tuple[str, str]:
   match = re.search(r"(.+?)((?:-fabric|-forge|-neoforge)?[+-]\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+)?)(\.[^.]+)?$", file_name)
   file_version = ""
   if match != None:
     file_version = match.group(2)
     file_name = match.group(1) + (match.group(3) or "")
-  return [file_name, file_version]
-def parse_version(file_version: str) -> tuple[str, list[int]]:
+  return file_name, file_version
+def parse_version(file_version: str) -> Version:
   # parse modloader
   match = re.match("-fabric|-forge|-neoforge", file_version)
   modloader = ""
@@ -53,21 +59,21 @@ def parse_version(file_version: str) -> tuple[str, list[int]]:
   # parse numbers
   split = file_version.split("-", 1)
   numbers = [int(x) for x in split[0].split(".")]
-  return [modloader, numbers, comparison, split[1] if len(split) > 1 else ""]
-def compare_version(src_version: str, dest_version: str) -> bool:
-  if src_version == "": return True
-  dest_modloader, dest_numbers, _, _ = parse_version(dest_version)
-  from_modloader, from_numbers, from_comparison, right = parse_version(src_version)
-  if from_comparison == "-":
-    if from_modloader != "" and from_modloader != dest_modloader: return False
-    if dest_numbers < from_numbers: return False
-    if right == "":
-      return dest_numbers >= from_numbers
+  return Version(modloader, comparison, numbers, split[1] if len(split) > 1 else "")
+def compare_versions(src_version_string: str, dest_version_string: str) -> bool:
+  if src_version_string == "": return True
+  dest_ver = parse_version(dest_version_string)
+  from_ver = parse_version(src_version_string)
+  if from_ver.comparison:
+    if from_ver.modloader != "" and from_ver.modloader != dest_ver.modloader: return False
+    if dest_ver.numbers < from_ver.numbers: return False
+    if from_ver.continued == "":
+      return dest_ver.numbers >= from_ver.numbers
     else:
-      to_numbers = parse_version(right)[1]
-      return dest_numbers >= from_numbers and dest_numbers <= to_numbers
+      to_ver = parse_version(from_ver.continued)
+      return dest_ver.numbers >= from_ver.numbers and dest_ver.numbers <= to_ver.numbers
   else:
-    raise ValueError(f"Invalid src_version: '{src_version}'")
+    raise ValueError(f"Invalid src_version: '{src_version_string}'")
 
 def apply_overrides(src: PathInfo, dest: PathInfo):
   if os.path.isdir(src.path):
@@ -84,7 +90,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
   else:
     # apply file override
     src_file = open(src.path, "r")
-    if compare_version(src.version, dest.version):
+    if compare_versions(src.version, dest.version):
       if src.name.endswith(".csv"):
         dest.path = dest.path[:-len(".csv")]
         content = ""
