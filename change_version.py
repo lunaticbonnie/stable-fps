@@ -24,12 +24,12 @@ class PathInfo:
   @staticmethod
   def from_dir_path(dir_path: str, version = ""):
     return PathInfo(dir_path, "", version)
-  def plus(self, name: str):
-    return PathInfo(f"{self.path}/{name}", name, self.version)
-  def plus_versioned(self, file_name: str):
-    file_path = f"{self.path}/{file_name}"
-    file_name, file_version = split_version_string(file_name)
-    return PathInfo(file_path, file_name, file_version)
+  def plus(self, path_name: str):
+    return PathInfo(f"{self.path}/{path_name}", path_name, self.version)
+  def plus_versioned(self, path_name: str):
+    path = f"{self.path}/{path_name}"
+    path_name, file_version = split_version_string(path_name)
+    return PathInfo(path, path_name, file_version)
 
 @dataclass
 class Version:
