@@ -1,2 +1,3 @@
+"package": .+; "package": "patrolin.stablefps.mixin",
 "mixins": [^\]]+\]; "mixins": [], "client": ["ExampleMixin"]
 "ExampleMixin"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin", "MinecraftMixin", "MouseHandlerMixin"

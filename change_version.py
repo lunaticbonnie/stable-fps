@@ -2,18 +2,22 @@ from dataclasses import dataclass
 import os
 import re
 import sys
+import time
+from typing import cast
 from zipfile import ZipFile
 
-def clean_path(path: str):
+def clean_path(path: str, expect_exists = False):
+  if len(path) <= 4: raise ValueError(f"Suspicious path: '{path}'")
   if os.path.isdir(path):
     for path_name in os.listdir(path):
       clean_path(f"{path}/{path_name}")
     os.rmdir(path)
+  elif expect_exists:
+    os.remove(path)
   elif os.path.exists(path):
     os.remove(path)
 def clean_template():
   clean_path("current/.github")
-  clean_path("current/src/main/java/patrolin/stablefps/mixin/ExampleMixin.java")
   clean_path("current/README.md")
 
 @dataclass
@@ -38,40 +42,43 @@ class Version:
   numbers: list[int]
   continued: str
 def split_version_string(file_name: str) -> tuple[str, str]:
-  match = re.search(r"(.+?)((?:-fabric|-forge|-neoforge)?[+-]\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+)?)(\.[^.]+)?$", file_name)
+  match = re.search(r"(.+?)((?:-fabric|-forge|-neoforge)?(?:[+-]\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+)?)?)(\.[^.]+)?$", file_name)
   file_version = ""
-  if match != None:
+  if match != None and match.group(2):
+    print(f"MATCH: {repr(match.group(2))}", )
     file_version = match.group(2)
     file_name = match.group(1) + (match.group(3) or "")
   return file_name, file_version
 def parse_version(file_version: str) -> Version:
   # parse modloader
-  match = re.match("-fabric|-forge|-neoforge", file_version)
+  match = re.match("-?(fabric|forge|neoforge)", file_version)
   modloader = ""
   if match != None:
-    modloader = match.group(0)
-    file_version = file_version[len(modloader):]
+    modloader = match.group(1)
+    file_version = file_version[match.end(1):]
   # parse comparison
   comparison = ""
-  if file_version[0] == "-" or file_version[0] == "+":
+  if file_version.startswith("-") or file_version.startswith("+"):
     comparison = file_version[0]
     file_version = file_version[1:]
   # parse numbers
   split = file_version.split("-", 1)
-  numbers = [int(x) for x in split[0].split(".")]
+  numbers = [int(x) for x in split[0].split(".")] if split[0] else []
   return Version(modloader, comparison, numbers, split[1] if len(split) > 1 else "")
 def version_matches(src_version_string: str, dest_version_string: str) -> bool:
   if src_version_string == "": return True
   dest_ver = parse_version(dest_version_string)
   from_ver = parse_version(src_version_string)
-  if from_ver.comparison:
-    if from_ver.modloader != "" and from_ver.modloader != dest_ver.modloader: return False
+  if from_ver.modloader != "" and from_ver.modloader != dest_ver.modloader: return False
+  if from_ver.comparison == "-":
     if dest_ver.numbers < from_ver.numbers: return False
     if from_ver.continued == "":
       return dest_ver.numbers >= from_ver.numbers
     else:
       to_ver = parse_version(from_ver.continued)
       return dest_ver.numbers >= from_ver.numbers and dest_ver.numbers <= to_ver.numbers
+  elif from_ver.comparison == "":
+    return True
   else:
     raise ValueError(f"Invalid src_version: '{src_version_string}'")
 
@@ -84,7 +91,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
       pass
     # recurse
     path_infos = [src.plus_versioned(name) for name in os.listdir(src.path)]
-    for info in sorted(path_infos, key=lambda info: [info.name, info.version]):
+    for info in sorted(path_infos, key=lambda info: [not info.name.endswith(".rename"), info.name, info.version]):
       print(f"+ {info.path}")
       apply_overrides(info, dest.plus(info.name))
   else:
@@ -103,15 +110,21 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
             left = left.strip()
             right = right.strip()
             print(f"  '{left}' -> '{right}'")
-            content = re.sub(left, right, content, count=1)
+            content = re.sub(left, right, content)
         with open(dest.path, "w") as dest_file:
           dest_file.write(content)
       elif src.name.endswith(".remove"):
         dest.path = dest.path[:-len(".remove")]
-        try:
-          os.remove(dest.path)
-        except:
-          pass
+        clean_path(dest.path, True)
+      elif src.name.endswith(".rename"):
+        dest.path = dest.path[:-len(".rename")]
+        dest_dir = dest.path.rsplit("/", 1)[0]
+        dest_name = ""
+        with open(src.path, "r") as src_file:
+          dest_name = src_file.read().strip()
+        print(f"  '{dest_dir}/{dest_name}'")
+        os.rename(dest.path, f"{dest_dir}/{dest_name}")
+        time.sleep(1e-3)
       else:
         with open(dest.path, "w+") as dest_file:
           dest_file.write(src_file.read())
@@ -120,14 +133,22 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
 if __name__ == "__main__":
   args = sys.argv[1:]
   if len(args) != 1:
+    versions_map = cast(dict[str, list[str]], dict())
     if os.path.isdir("templates"):
-      versions = [v.rsplit("-", 1)[1][:-len(".zip")] for v in os.listdir("templates")]
-      print("versions: " + " ".join(sorted(versions, key=parse_version)))
+      for file_name in os.listdir("templates"):
+        if file_name.endswith(".zip"): file_name = file_name[:-len(".zip")]
+        modloader, version = file_name.split("-")
+        version_list = versions_map.get(modloader, [])
+        version_list.append(version)
+        versions_map[modloader] = version_list
+      for modloader, version_list in versions_map.items():
+        version_list = sorted(version_list, key=lambda x: parse_version(x).numbers)
+        print(f"- {modloader}: {" ".join(version_list)}")
     exit()
   target_version = args[0]
   clean_path("current")
   if target_version != "clean":
-    with ZipFile(f"templates/stable-fps-template-{target_version}.zip") as z:
+    with ZipFile(f"templates/{target_version}.zip") as z:
       z.extractall("current")
     clean_template()
     apply_overrides(PathInfo.from_dir_path("overrides"), PathInfo.from_dir_path("current", target_version))

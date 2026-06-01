@@ -1,3 +1,7 @@
+examplemod.mixins.json; mixins.json
+com.examplemod.ExampleMod; patrolin.stablefps.StableFPS
+ExampleMod; Stable FPS
+examplemod; stablefps
 "CC0-1\.0"; "MIT"
 "description": [^\n]+; "description": "Minecraft mod to fix long-standing FPS stability issues.",
 "Me!"; "Patrolin"
