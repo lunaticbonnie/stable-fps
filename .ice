@@ -18,4 +18,4 @@ build-version:
   python change_version.py $$ARGS
   $$GRADLEW runClient
   $$GRADLEW build
-  cp current/build/libs/stable-fps-1.0.1.jar "dist/stable-fps-1.0.1+$$ARGS.jar"
+  cp current/build/libs/$modid-$version.jar "dist/$modid-$version+$$ARGS.jar"

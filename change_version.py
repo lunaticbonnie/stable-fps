@@ -114,6 +114,14 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
             left, right = line.split(";", 1)
             left = left.strip()
             right = right.strip()
+            while (match := re.search(r"\$[A-Za-z0-9]+", right)) != None:
+              variable_name = match.group(0)[1:]
+              try:
+                value = os.environ[variable_name]
+              except KeyError:
+                print(f"{match.group(0)} is not defined.")
+                exit(1)
+              right = right[:match.start(0)] + value + right[match.end(0):]
             print(f"  '{left}' -> '{right}'")
             content = re.sub(left, right, content)
         with open(dest.path, "w") as dest_file:

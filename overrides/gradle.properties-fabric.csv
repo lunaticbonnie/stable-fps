@@ -1,2 +1,2 @@
-com.examplemod; patrolin.stablefps
-mod_version=.+;mod_version=1.0.1
+com.examplemod; $authorid.$modid
+mod_version=.+;mod_version=$version
