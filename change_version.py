@@ -119,7 +119,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
               try:
                 value = os.environ[variable_name]
               except KeyError:
-                print(f"{match.group(0)} is not defined.")
+                print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
                 exit(1)
               right = right[:match.start(0)] + value + right[match.end(0):]
             print(f"  '{left}' -> '{right}'")
