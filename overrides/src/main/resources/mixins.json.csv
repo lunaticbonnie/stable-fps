@@ -1,3 +1,4 @@
 "package": .+; "package": "$authorid.$modid.mixin",
+"compatibilityLevel": [^,]+; "compatibilityLevel": "JAVA_8"
 "mixins": [^\]]+\]; "mixins": [], "client": ["ClientMixins"]
 "ClientMixins"; "FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin", "MinecraftMixin", "MouseHandlerMixin"

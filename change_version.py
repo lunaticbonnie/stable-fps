@@ -36,10 +36,10 @@ class PathInfo:
     return PathInfo(path, path_name, file_version)
   def get_override_order(self):
     is_dir = os.path.isdir(self.path)
-    is_not_rename = not self.name.endswith(".rename")
+    is_not_rename_from = not self.name.endswith(".renamefrom")
     name = self.name
     version = parse_version(self.version)
-    return [is_dir, is_not_rename, name, version.modloader, version.comparison == "+", version.numbers, version.continued]
+    return [is_dir, is_not_rename_from, name, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
 @dataclass
 class Version:
@@ -129,14 +129,26 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
       elif src.name.endswith(".remove"):
         dest.path = dest.path[:-len(".remove")]
         clean_path(dest.path, True)
-      elif src.name.endswith(".rename"):
-        dest.path = dest.path[:-len(".rename")]
-        dest_dir = dest.path.rsplit("/", 1)[0]
+      elif src.name.endswith(".renamefrom"):
+        to_path = dest.path[:-len(".renamefrom")]
+        dest_dir = to_path.rsplit("/", 1)[0]
         dest_name = ""
         with open(src.path, "r") as src_file:
           dest_name = src_file.read().strip()
-        print(f"  '{dest_dir}/{dest_name}'")
-        os.rename(dest.path, f"{dest_dir}/{dest_name}")
+        from_path = f"{dest_dir}/{dest_name}"
+        print(f"  '{from_path}' -> '{to_path}'")
+        clean_path(to_path, False)
+        os.rename(from_path, to_path)
+      elif src.name.endswith(".rename"):
+        from_path = dest.path[:-len(".rename")]
+        dest_dir = from_path.rsplit("/", 1)[0]
+        dest_name = ""
+        with open(src.path, "r") as src_file:
+          dest_name = src_file.read().strip()
+        to_path = f"{dest_dir}/{dest_name}"
+        print(f"  '{from_path}' -> '{to_path}'")
+        clean_path(to_path, False)
+        os.rename(from_path, to_path)
         time.sleep(1e-3)
       else:
         with open(dest.path, "w+") as dest_file:
