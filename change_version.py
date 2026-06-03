@@ -34,6 +34,12 @@ class PathInfo:
     path = f"{self.path}/{path_name}"
     path_name, file_version = split_version_string(path_name)
     return PathInfo(path, path_name, file_version)
+  def get_override_order(self):
+    is_dir = os.path.isdir(self.path)
+    is_not_rename = not self.name.endswith(".rename")
+    name = self.name
+    version = parse_version(self.version)
+    return [is_dir, is_not_rename, name, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
 @dataclass
 class Version:
@@ -45,7 +51,6 @@ def split_version_string(file_name: str) -> tuple[str, str]:
   match = re.search(r"(.+?)((?:-fabric|-forge|-neoforge)?(?:[+-]\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+)?)?)(\.[^.]+)?$", file_name)
   file_version = ""
   if match != None and match.group(2):
-    print(f"MATCH: {repr(match.group(2))}", )
     file_version = match.group(2)
     file_name = match.group(1) + (match.group(3) or "")
   return file_name, file_version
@@ -91,7 +96,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
       pass
     # recurse
     path_infos = [src.plus_versioned(name) for name in os.listdir(src.path)]
-    for info in sorted(path_infos, key=lambda info: [not info.name.endswith(".rename"), info.name, info.version]):
+    for info in sorted(path_infos, key=lambda info: info.get_override_order()):
       print(f"+ {info.path}")
       apply_overrides(info, dest.plus(info.name))
   else:
