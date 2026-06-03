@@ -39,7 +39,7 @@ class PathInfo:
     is_not_rename_from = not self.name.endswith(".renamefrom")
     name = self.name
     version = parse_version(self.version)
-    return [is_dir, is_not_rename_from, name, version.comparison == "+", version.numbers, version.continued, version.modloader]
+    return [is_dir, is_not_rename_from, name, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
 @dataclass
 class Version:

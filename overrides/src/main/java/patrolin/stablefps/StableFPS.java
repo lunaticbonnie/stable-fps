@@ -1,22 +1,19 @@
 package patrolin.stablefps;
 
-import com.mojang.blaze3d.platform.WindowEventHandler;
 import net.fabricmc.api.ModInitializer;
+import com.mojang.blaze3d.platform.WindowEventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.concurrent.*;
 
 public class StableFPS implements ModInitializer {
-	@Override
-	public void onInitialize() {}
+	/* INITIALIZE */
 	public static final String MOD_ID = "stablefps";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	// window
 	public static volatile long window;
 	public static final CountDownLatch window_ready = new CountDownLatch(1);
-	public static volatile boolean shouldClose = false;
 
 	// events
 	public static Thread inputThread = null;
