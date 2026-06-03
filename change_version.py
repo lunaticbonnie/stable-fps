@@ -39,7 +39,7 @@ class PathInfo:
     is_not_rename_from = not self.name.endswith(".renamefrom")
     name = self.name
     version = parse_version(self.version)
-    return [is_dir, is_not_rename_from, name, version.modloader, version.comparison == "+", version.numbers, version.continued]
+    return [is_dir, is_not_rename_from, name, version.comparison == "+", version.numbers, version.continued, version.modloader]
 
 @dataclass
 class Version:
@@ -123,6 +123,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
                 exit(1)
               right = right[:match.start(0)] + value + right[match.end(0):]
             print(f"  '{left}' -> '{right}'")
+            right = re.sub(r"\n", "\n", right)
             content = re.sub(left, right, content)
         with open(dest.path, "w") as dest_file:
           dest_file.write(content)
