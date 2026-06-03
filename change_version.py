@@ -107,7 +107,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
         dest.path = dest.path[:-len(".csv")]
         content = ""
         with open(dest.path, "r", encoding="utf8") as dest_file:
-          content = re.sub(r"\r|\n|\r\n", "\n", dest_file.read())
+          content = dest_file.read() # NOTE: Python automatically converts "\r\n" to "\n"
         with open(src.path, "r") as src_file:
           for line in src_file.readlines():
             if not line.strip(): continue
@@ -125,7 +125,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
             print(f"  '{left}' -> '{right}'")
             content = re.sub(left, right, content, 0, re.MULTILINE)
         with open(dest.path, "w") as dest_file:
-          dest_file.write(content)
+          dest_file.write(content) # NOTE: Python automatically converts "\n" back to "\r\n"
       elif src.name.endswith(".remove"):
         dest.path = dest.path[:-len(".remove")]
         clean_path(dest.path, True)
