@@ -139,6 +139,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
         print(f"  '{from_path}' -> '{to_path}'")
         clean_path(to_path, False)
         os.rename(from_path, to_path)
+        time.sleep(1e-3)
       elif src.name.endswith(".rename"):
         from_path = dest.path[:-len(".rename")]
         dest_dir = from_path.rsplit("/", 1)[0]
