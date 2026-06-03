@@ -107,7 +107,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
         dest.path = dest.path[:-len(".csv")]
         content = ""
         with open(dest.path, "r", encoding="utf8") as dest_file:
-          content = dest_file.read()
+          content = re.sub(r"\r|\n|\r\n", "\n", dest_file.read())
         with open(src.path, "r") as src_file:
           for line in src_file.readlines():
             if not line.strip(): continue
@@ -123,8 +123,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
                 exit(1)
               right = right[:match.start(0)] + value + right[match.end(0):]
             print(f"  '{left}' -> '{right}'")
-            right = re.sub(r"\n", "\n", right)
-            content = re.sub(left, right, content)
+            content = re.sub(left, right, content, 0, re.MULTILINE)
         with open(dest.path, "w") as dest_file:
           dest_file.write(content)
       elif src.name.endswith(".remove"):

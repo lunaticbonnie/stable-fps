@@ -1,1 +1,1 @@
-targetCompatibility = .+; targetCompatibility = JavaVersion.VERSION_17
+targetCompatibility = .+$; targetCompatibility = JavaVersion.VERSION_17
