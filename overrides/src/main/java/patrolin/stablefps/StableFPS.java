@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 public class StableFPS implements ModInitializer {
 	@Override
 	public void onInitialize() {}
-	public static final String MOD_ID = "stable-fps";
+	public static final String MOD_ID = "stablefps";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	// window
