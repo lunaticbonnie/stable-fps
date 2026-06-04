@@ -1,0 +1,6 @@
+examplemod; $modid
+displayName=.+$; displayName="$modname"
+version=.+$; version="$version"
+license=.+$; license="$license"
+authors=.+$; authors="$authorname"
+description='''[\s\S]+?'''; description='''$description'''
