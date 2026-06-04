@@ -1,3 +1,5 @@
+minecraft_version=.+$; minecraft_version=$minecraft_version
+forge_version=.+$; forge_version=$forge_version
 mod_name=.+$; mod_name=$modname
 mod_id=.+$; mod_id=$modid
 mod_license=.+$; mod_license=$license

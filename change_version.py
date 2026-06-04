@@ -6,6 +6,8 @@ import time
 from typing import cast
 from zipfile import ZipFile
 
+env = {k.lower(): v for k, v in os.environ.items()}
+
 def clean_path(path: str, expect_exists = False):
   if len(path) <= 4: raise ValueError(f"Suspicious path: '{path}'")
   if os.path.isdir(path):
@@ -114,10 +116,10 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
             left, right = line.split(";", 1)
             left = left.strip()
             right = right.strip()
-            while (match := re.search(r"\$[A-Za-z0-9]+", right)) != None:
+            while (match := re.search(r"\$[A-Za-z0-9_]+", right)) != None:
               variable_name = match.group(0)[1:]
               try:
-                value = os.environ[variable_name]
+                value = env[variable_name]
               except KeyError:
                 print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
                 exit(1)
@@ -176,5 +178,11 @@ if __name__ == "__main__":
   if target_version != "clean":
     with ZipFile(f"templates/{target_version}.zip") as z:
       z.extractall("current")
+    if target_version.startswith("forge"):
+      with open("current/gradle.properties", "r") as f:
+        for line in f.readlines():
+          for key in ["minecraft_version", "forge_version", "mapping_version"]:
+            if line.startswith(f"{key}="):
+              env[key.lower()] = line[len(key)+1:-1]
     clean_template()
     apply_overrides(PathInfo.from_dir_path("overrides"), PathInfo.from_dir_path("current", target_version))
