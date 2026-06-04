@@ -1,4 +1,4 @@
-examplemod.mixins.json; mixins.json
+examplemod.mixins.json; $modid.mixins.json
 com.examplemod.ExampleMod; $entrypoint
 ExampleMod; $modname
 examplemod; $modid
