@@ -110,10 +110,17 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
         content = ""
         with open(dest.path, "r", encoding="utf8") as dest_file:
           content = dest_file.read() # NOTE: Python automatically converts "\r\n" to "\n"
+        splitter = ";"
         with open(src.path, "r") as src_file:
           for line in src_file.readlines():
             if not line.strip(): continue
-            left, right = line.split(";", 1)
+            split = line.split(splitter, 1)
+            if len(split) == 1:
+              splitter = line.strip()
+              continue
+            else:
+              assert(len(split) == 2, f"Invalid replace(\"{splitter}\"): '{line.strip()}'")
+            left, right = split
             left = left.strip()
             right = right.strip()
             while (match := re.search(r"\$[A-Za-z0-9_]+", right)) != None:

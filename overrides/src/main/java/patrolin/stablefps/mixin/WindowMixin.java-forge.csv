@@ -1,0 +1,6 @@
+->
+import patrolin.stablefps.StableFPS; -> import patrolin.stablefps.StableFPS;\nimport java.util.function.IntSupplier;\nimport java.util.function.LongSupplier;\nimport java.util.function.Supplier;\nimport com.llamalad7.mixinextras.injector.wrapoperation.Operation;\nimport com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+@Redirect[\s\S]*?method="<init>" -> @WrapOperation(\n    method="<init>"
+Lorg/lwjgl/glfw/GLFW;glfwCreateWindow\(IILjava/lang/CharSequence;JJ\)J -> Lnet/minecraftforge/fml/loading/ImmediateWindowHandler;setupMinecraftWindow(Ljava/util/function/IntSupplier;Ljava/util/function/IntSupplier;Ljava/util/function/Supplier;Ljava/util/function/LongSupplier;)J
+long glfwCreateWindow\([^\)]*\) -> long setupMinecraftWindow(IntSupplier width, IntSupplier height, Supplier<String> title, LongSupplier monitor, Operation<Long> original)
+StableFPS.window = .*$ -> StableFPS.window = GLFW.glfwCreateWindow(width.getAsInt(), height.getAsInt(), title.get(), monitor.getAsLong(), 0L);
