@@ -1,1 +1,2 @@
 version: '.+'$; version: '$minecraft_version'
+version = .+$; version = '$version'
