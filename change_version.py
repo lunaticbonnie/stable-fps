@@ -161,7 +161,9 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
         os.rename(from_path, to_path)
         time.sleep(1e-3)
       else:
-        with open(dest.path, "w+") as dest_file:
+        src_file.close()
+        src_file = open(src.path, "rb")
+        with open(dest.path, "wb+") as dest_file:
           dest_file.write(src_file.read())
     src_file.close()
 
