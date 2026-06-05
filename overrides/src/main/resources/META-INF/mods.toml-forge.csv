@@ -1,4 +1,5 @@
 examplemod; $modid
+\${mod_id}; $modid
 displayName=.+$; displayName="$modname"
 version=.+$; version="$version"
 license=.+$; license="$license"

@@ -191,10 +191,10 @@ if __name__ == "__main__":
     if target_version.startswith("forge"):
       # TODO: load the version ranges properly
       env["minecraft_version"] = target_version.split("-", 1)[1]
-      env["minecraft_version_range"] = "[1.21.11, 1.22)"
-      env["forge_version"] = "61.1.0"
-      env["forge_version_range"] = "[61)"
-      env["loader_version_range"] = "[61)"
+      env["minecraft_version_range"] = "[0)"
+      env["forge_version"] = "UNKNOWN"
+      env["forge_version_range"] = "[0)"
+      env["loader_version_range"] = "[0)"
       with open("current/gradle.properties", "r") as f:
         for line in f.readlines():
           for key in ["minecraft_version", "forge_version", "mapping_version", "loader_version_range", "minecraft_version_range", "forge_version_range"]:
