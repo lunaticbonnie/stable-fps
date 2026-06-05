@@ -189,10 +189,12 @@ if __name__ == "__main__":
     with ZipFile(f"templates/{target_version}.zip") as z:
       z.extractall("current")
     if target_version.startswith("forge"):
-      # TODO: load the version ranges properly
+      # TODO: load the versions properly
       env["minecraft_version"] = target_version.split("-", 1)[1]
       env["minecraft_version_range"] = "[0)"
       env["forge_version"] = "UNKNOWN"
+      if target_version[len("forge-"):].startswith("26.1"):
+        env["forge_version"] = "62.0.9"
       env["forge_version_range"] = "[0)"
       env["loader_version_range"] = "[0)"
       with open("current/gradle.properties", "r") as f:

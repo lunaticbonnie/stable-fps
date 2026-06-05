@@ -37,3 +37,5 @@ Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
 
 ### Todo list
+- neoforge version?
+- more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version

@@ -9,7 +9,7 @@ import patrolin.stablefps.ForgeWindowAccessor;
 
 @Mixin(LoadingOverlay.class)
 public class ForgeWindowMixin {
-  @Inject(method="tick", at=@At(value = "INVOKE", target="Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
+  @Inject(method="render", at=@At(value = "INVOKE", target="Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V"))
   private void onLoad(CallbackInfo ci) {
     ForgeWindowAccessor.closeForgeLoadingWindow();
   }
