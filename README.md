@@ -30,12 +30,10 @@ Run tracy
 - Check if protocol version matches, else download different version of tracy...
 - Connect
 
-## java versions
+### java versions
 Java 25 for Minecraft 26.1 and later
 Java 21 for Minecraft 1.20.5 to 1.21.11
 Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
 
-## Todo list
-- Run through normal window creation apis in Forge (and simplify code)
-- Fix OpenGL version in Forge version
+### Todo list

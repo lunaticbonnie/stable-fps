@@ -131,8 +131,9 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
                 print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
                 exit(1)
               right = right[:match.start(0)] + value + right[match.end(0):]
+            right = right.replace("\\n", "\n")
             print(f"  '{left}' -> '{right}'")
-            content = re.sub(left, right, content, 0, re.MULTILINE)
+            content = re.sub(left, lambda _match: right, content, 0, re.MULTILINE)
         with open(dest.path, "w") as dest_file:
           dest_file.write(content) # NOTE: Python automatically converts "\n" back to "\r\n"
       elif src.name.endswith(".remove"):
