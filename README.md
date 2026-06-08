@@ -37,6 +37,6 @@ Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
 
 ### Todo list
-- fix versions forge-1.21.1 - forge-1.21.4
-- neoforge version?
+- can we actually get the forge early loading window to close instead of just hiding it?
+- neoforge versions?
 - more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version

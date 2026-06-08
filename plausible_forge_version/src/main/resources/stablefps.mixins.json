@@ -1,0 +1,6 @@
+{
+	"required": true,
+	"package": "patrolin.stablefps.mixin",
+	"compatibilityLevel": "JAVA_9",
+	"mixins": [], "client": ["FramerateLimiterMixin", "InputConstantsMixin", "RenderSystemMixin", "WindowMixin", "ForgeWindowMixin", "MinecraftMixin"]
+}
