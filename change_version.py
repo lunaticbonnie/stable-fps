@@ -38,10 +38,23 @@ class PathInfo:
     return PathInfo(path, path_name, file_version)
   def get_override_order(self):
     is_dir = os.path.isdir(self.path)
-    is_not_rename_from = not self.name.endswith(".renamefrom")
     name = self.name
+    early_type_order = 1
+    late_type_order = 0
+    if self.name.endswith(".renamefrom"):
+      name = name[:-len(".renamefrom")]
+      early_type_order = 0
+    elif self.name.endswith(".renameto"):
+      name = name[:-len(".renameto")]
+      late_type_order = 2
+    elif self.name.endswith(".remove"):
+      name = name[:-len(".remove")]
+      late_type_order = 3
+    elif self.name.endswith(".softremove"):
+      name = name[:-len(".softremove")]
+      late_type_order = 4
     version = parse_version(self.version)
-    return [is_dir, is_not_rename_from, name, version.modloader, version.comparison == "+", version.numbers, version.continued]
+    return [is_dir, early_type_order, name, late_type_order, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
 @dataclass
 class Version:
@@ -139,6 +152,9 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
       elif src.name.endswith(".remove"):
         dest.path = dest.path[:-len(".remove")]
         clean_path(dest.path, True)
+      elif src.name.endswith(".softremove"):
+        dest.path = dest.path[:-len(".remove")]
+        clean_path(dest.path, False)
       elif src.name.endswith(".renamefrom"):
         to_path = dest.path[:-len(".renamefrom")]
         dest_dir = to_path.rsplit("/", 1)[0]
