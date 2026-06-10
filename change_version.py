@@ -202,15 +202,21 @@ if __name__ == "__main__":
   target_version = args[0]
   clean_path("current")
   if target_version != "clean":
-    with ZipFile(f"templates/{target_version}.zip") as z:
+    found_templates = []
+    for name in os.listdir("templates"):
+      if name.startswith(target_version):
+        found_templates.append(name)
+    assert(len(found_templates) == 1, f"found_templates: {found_templates}")
+    template_name = found_templates[0]
+    template_path = f"templates/{template_name}"
+    template_name = template_name.rsplit(".", 1)[0]
+    with ZipFile(template_path) as z:
       z.extractall("current")
     if target_version.startswith("forge"):
-      # TODO: load the versions properly
-      env["minecraft_version"] = target_version.split("-", 1)[1]
+      _, minecraft_version, forge_version = template_name.split("-")
+      env["minecraft_version"] = minecraft_version
       env["minecraft_version_range"] = "[0)"
-      env["forge_version"] = "UNKNOWN"
-      if target_version[len("forge-"):].startswith("26.1"):
-        env["forge_version"] = "62.0.9"
+      env["forge_version"] = forge_version
       env["forge_version_range"] = "[0)"
       env["loader_version_range"] = "[0)"
       with open("current/gradle.properties", "r") as f:

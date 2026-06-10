@@ -1,5 +1,6 @@
 examplemod; $modid
 \${mod_id}; $modid
+#clientSideOnly=true; clientSideOnly=true
 displayName=.+$; displayName="$modname"
 version=.+$; version="$version"
 license=.+$; license="$license"

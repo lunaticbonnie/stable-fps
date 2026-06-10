@@ -9,6 +9,7 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 Compatible with Sodium.
 
 NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those...
+NOTE: The forge-based version works by opening a second window, redirecting the forge internals to it and hiding the original window. This has the side effect of the window not getting focus when starting the game. (In theory you should just be able to piggyback off of the existing window, but in practice Java doesn't actually allow you to schedule work to run on the same thread as the current thread (which is where Windows requires you to get inputs)...)
 
 Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps).
 
@@ -37,6 +38,6 @@ Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
 
 ### Todo list
-- can we actually get the forge early loading window to close instead of just hiding it?
 - neoforge versions?
 - more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
+- can we actually get the forge early loading window to close instead of just hiding it?
