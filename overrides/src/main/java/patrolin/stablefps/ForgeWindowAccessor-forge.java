@@ -1,43 +1,53 @@
 package patrolin.stablefps;
 
 import net.minecraftforge.fml.earlydisplay.DisplayWindow;
+import net.minecraftforge.fml.earlydisplay.SimpleBufferBuilder;
 import net.minecraftforge.fml.loading.ImmediateWindowHandler;
+import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class ForgeWindowAccessor {
-  public static boolean isForgeLoadingWindowClosed = false;
-  public static String getForgeOpenGLVersion() {
-    DisplayWindow displayWindow = getDisplayWindow();
-    try {
-      Field field = DisplayWindow.class.getDeclaredField("glVersion");
-      field.setAccessible(true);
-      return (String)field.get(displayWindow);
-    } catch (Exception err) {
-      StableFPS.LOGGER.error("", err);
-      throw new AssertionError(err.getMessage());
-    }
+  public static void closeOldWindow() throws InterruptedException {
+    long window = getWindow(getDisplayWindow());
+    GLFW.glfwHideWindow(window);
+    GLFW.glfwPollEvents();
   }
-  public static void closeForgeLoadingWindow() {
-    if (isForgeLoadingWindowClosed) return;
-    isForgeLoadingWindowClosed = true;
+  public static long recreateWindow() {
+    shutdownOldDisplayWindow();
+    StartupNotificationManager.getCurrentProgress().getFirst().complete();
+    ImmediateWindowHandler.load("client", new String[]{});
+    long window = getWindow(getDisplayWindow());
+    GLFW.glfwFocusWindow(window);
+    return window;
+  }
+
+  private static void shutdownOldDisplayWindow() {
     try {
+      // shutdown oldDisplayWindow
       DisplayWindow displayWindow = getDisplayWindow();
-      // get `DisplayWindow.renderScheduler`
       Field field = DisplayWindow.class.getDeclaredField("renderScheduler");
       field.setAccessible(true);
-      ScheduledExecutorService forgeScheduler = (ScheduledExecutorService)field.get(displayWindow);
-      // shutdown renderScheduler
-      forgeScheduler.shutdown();
-      boolean didShutdown = forgeScheduler.awaitTermination(60, TimeUnit.SECONDS);
-      if (!didShutdown) throw new AssertionError("StableFPS: Failed to shutdown Forge loading-window threads.");
-
-      // close Forge loading-window
-      long forgeLoadingWindow = getWindow(displayWindow);
-      GLFW.glfwDestroyWindow(forgeLoadingWindow);
+      ScheduledExecutorService renderScheduler = (ScheduledExecutorService)field.get(displayWindow);
+      renderScheduler.shutdown();
+      GLFW.glfwMakeContextCurrent(0);
+      // recreate SimpleBufferBuilder
+      String[] arrayKeys = {"VERTEX_ARRAYS", "VERTEX_BUFFERS", "VERTEX_BUFFER_LENGTHS"};
+      for (String key : arrayKeys) {
+        field = SimpleBufferBuilder.class.getDeclaredField(key);
+        field.setAccessible(true);
+        int[] array = (int[])field.get(null);
+        Arrays.fill(array, 0);
+      }
+      String[] intKeys = {"elementBuffer", "elementBufferVertexLength"};
+      for (String key : intKeys) {
+        field = SimpleBufferBuilder.class.getDeclaredField(key);
+        field.setAccessible(true);
+        field.setInt(null, 0);
+      }
     } catch (Exception err) {
       StableFPS.LOGGER.error("", err);
       throw new AssertionError(err.getMessage());
