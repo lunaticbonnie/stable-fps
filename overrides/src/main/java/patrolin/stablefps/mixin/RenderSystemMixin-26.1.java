@@ -11,5 +11,5 @@ public class RenderSystemMixin {
      * @reason don't call `GLFW.glfwPollEvents()` on the render thread
      */
     @Overwrite
-    private static void pollEvents() {}
+    public static void pollEvents() {}
 }

@@ -7,6 +7,10 @@ from typing import cast
 from zipfile import ZipFile
 
 env = {k.lower(): v for k, v in os.environ.items()}
+def assertf(condition: bool, string: str):
+  if not condition:
+    print(f"\033[31m${string}\033[0m")
+    exit(1)
 
 def clean_path(path: str, expect_exists = False):
   if len(path) <= 4: raise ValueError(f"Suspicious path: '{path}'")
@@ -132,7 +136,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
               splitter = line.strip()
               continue
             else:
-              assert(len(split) == 2, f"Invalid replace(\"{splitter}\"): '{line.strip()}'")
+              assertf(len(split) == 2, f"Invalid replace(\"{splitter}\"): '{line.strip()}'")
             left, right = split
             left = left.strip()
             right = right.strip()
@@ -191,7 +195,7 @@ if __name__ == "__main__":
     if os.path.isdir("templates"):
       for file_name in os.listdir("templates"):
         if file_name.endswith(".zip"): file_name = file_name[:-len(".zip")]
-        modloader, version = file_name.split("-")
+        modloader, version, *_ = file_name.split("-")
         version_list = versions_map.get(modloader, [])
         version_list.append(version)
         versions_map[modloader] = version_list
@@ -204,16 +208,16 @@ if __name__ == "__main__":
   if target_version != "clean":
     found_templates = []
     for name in os.listdir("templates"):
-      if name.startswith(target_version):
+      if re.match(rf"{target_version}[-\.]", name) != None:
         found_templates.append(name)
-    assert(len(found_templates) == 1, f"found_templates: {found_templates}")
+    assertf(len(found_templates) == 1, f"found_templates: {found_templates}")
     template_name = found_templates[0]
     template_path = f"templates/{template_name}"
     template_name = template_name.rsplit(".", 1)[0]
     with ZipFile(template_path) as z:
       z.extractall("current")
     if target_version.startswith("forge"):
-      _, minecraft_version, forge_version = template_name.split("-")
+      _, minecraft_version, forge_version, *_ = template_name.split("-")
       env["minecraft_version"] = minecraft_version
       env["minecraft_version_range"] = "[0)"
       env["forge_version"] = forge_version

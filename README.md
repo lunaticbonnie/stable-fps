@@ -16,7 +16,7 @@ Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fp
 ## dev
 Download https://github.com/Patrolin/justice
 Download Python 3
-Download mod templates from https://fabricmc.net/develop/template/ into `templates/*` for all Minecraft versions
+Download mod templates from https://fabricmc.net/develop/template/ into `templates/*` for all desired Minecraft versions
     Mod Name="ExampleMod"
     Package Name="com.examplemod"
     Minecraft Version=...

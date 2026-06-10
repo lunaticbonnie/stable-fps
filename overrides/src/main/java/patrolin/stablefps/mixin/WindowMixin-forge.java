@@ -23,8 +23,8 @@ import patrolin.stablefps.StableFPS.ResizeDisplayEvent;
 public class WindowMixin {
 	// inputThread
 	@Redirect(
-			method="<init>",
-			at=@At(value="INVOKE", target="Lnet/minecraftforge/fml/loading/ImmediateWindowHandler;setupMinecraftWindow(Ljava/util/function/IntSupplier;Ljava/util/function/IntSupplier;Ljava/util/function/Supplier;Ljava/util/function/LongSupplier;)J")
+		method="<init>",
+		at=@At(value="INVOKE", target="Lnet/minecraftforge/fml/loading/ImmediateWindowHandler;setupMinecraftWindow(Ljava/util/function/IntSupplier;Ljava/util/function/IntSupplier;Ljava/util/function/Supplier;Ljava/util/function/LongSupplier;)J", remap = false)
 	)
 	private long setupMinecraftWindow(IntSupplier width, IntSupplier height, Supplier<String> title, LongSupplier monitor) {
 		StableFPS.inputThread = new Thread(() -> {
