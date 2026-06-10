@@ -1,5 +1,7 @@
 GRADLEW :: "./current/gradlew -p current"
 
+stop:
+  $$GRADLEW --stop
 clean:
   $$GRADLEW --stop
   python change_version.py clean
