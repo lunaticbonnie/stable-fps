@@ -9,7 +9,7 @@ from zipfile import ZipFile
 env = {k.lower(): v for k, v in os.environ.items()}
 def assertf(condition: bool, string: str):
   if not condition:
-    print(f"\033[31m${string}\033[0m")
+    print(f"\033[31m{string}\033[0m")
     exit(1)
 
 def clean_path(path: str, expect_exists = False):
@@ -189,6 +189,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
     src_file.close()
 
 if __name__ == "__main__":
+  # print versions
   args = sys.argv[1:]
   if len(args) != 1:
     versions_map = cast(dict[str, list[str]], dict())
@@ -203,17 +204,20 @@ if __name__ == "__main__":
         version_list = sorted(version_list, key=lambda x: parse_version(x).numbers)
         print(f"- {modloader}: {" ".join(version_list)}")
     exit()
+  # parse args
   target_version = args[0]
+  # find matching template
+  found_templates = []
+  for name in os.listdir("templates"):
+    if re.match(rf"{target_version}[-\.]", name) != None:
+      found_templates.append(name)
+  assertf(len(found_templates) == 1, f"found_templates: {found_templates}")
+  template_name = found_templates[0]
+  template_path = f"templates/{template_name}"
+  template_name = template_name.rsplit(".", 1)[0]
+  # change to the specified version
   clean_path("current")
   if target_version != "clean":
-    found_templates = []
-    for name in os.listdir("templates"):
-      if re.match(rf"{target_version}[-\.]", name) != None:
-        found_templates.append(name)
-    assertf(len(found_templates) == 1, f"found_templates: {found_templates}")
-    template_name = found_templates[0]
-    template_path = f"templates/{template_name}"
-    template_name = template_name.rsplit(".", 1)[0]
     with ZipFile(template_path) as z:
       z.extractall("current")
     if target_version.startswith("forge"):
