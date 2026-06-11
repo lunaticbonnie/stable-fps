@@ -9,7 +9,6 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 Compatible with Sodium.
 
 NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those...
-NOTE: The forge-based version works by opening a second window, and closing the original. This has the side effect of the window not getting focus when starting the game. (In theory you should just be able to piggyback off of the existing window, but in practice Java doesn't actually allow you to schedule work to run on the same thread as the current thread (which is where Windows requires you to get inputs)...)
 
 Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps).
 
@@ -43,3 +42,4 @@ Minecraft 1.21.9 and above has F3 menu on the main menu
 ### Todo list
 - neoforge versions?
 - more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
+- ship image with forge versions
