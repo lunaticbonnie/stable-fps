@@ -10,7 +10,7 @@ Compatible with Sodium.
 
 NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those...
 
-Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps).
+Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps) and [Modrinth](https://modrinth.com/mod/stablefps-xyz).
 
 ## dev
 Download https://github.com/Patrolin/justice
