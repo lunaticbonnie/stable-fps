@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import patrolin.stablefps.ForgeWindowAccessor;
 import patrolin.stablefps.StableFPS;
@@ -32,11 +33,12 @@ public class WindowMixin {
 			try {
 				// open the window
 				StableFPS.window = ForgeWindowAccessor.recreateForgeWindow(width.getAsInt(), height.getAsInt(), title.get(), monitor.getAsLong(), 0L);
-				GLFW.glfwPollEvents(); /* NOTE: prevent race condition with initializing GLFW */
+				GLFW.glfwPollEvents(); /* NOTE: prevent race condition with initializing the window size */
 				StableFPS.window_ready.countDown();
 				while (!StableFPS.forge_is_setup.await(0, TimeUnit.MILLISECONDS)) {
-					GLFW.glfwPollEvents();
+					GLFW.glfwPollEvents(); /* NOTE: prevent race condition with initializing OpenGL */
 				}
+				GLFW.glfwShowWindow(StableFPS.window);
 				while (true) {
 					// handle inputThread events
 					InputThreadEvent event;
@@ -70,11 +72,14 @@ public class WindowMixin {
 			//long forgeEarlyWindow = net.minecraftforge.fml.loading.ImmediateWindowHandler.setupMinecraftWindow(width, height, title, monitor);
 			ForgeWindowAccessor.closeForgeEarlyWindow();
 			ForgeWindowAccessor.recreateForgeFramebuffer(StableFPS.window);
-			StableFPS.forge_is_setup.countDown();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return StableFPS.window;
+	}
+	@Inject(method="<init>", at=@At("RETURN"))
+	private void afterInit(CallbackInfo ci) {
+		StableFPS.forge_is_setup.countDown();
 	}
 	@Redirect(
 		method="onFramebufferResize",
