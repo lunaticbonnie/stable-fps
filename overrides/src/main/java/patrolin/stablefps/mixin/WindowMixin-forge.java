@@ -8,9 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import java.util.function.IntSupplier;
-import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 import patrolin.stablefps.ForgeWindowAccessor;
 import patrolin.stablefps.StableFPS;
 import patrolin.stablefps.StableFPS.InputThreadEvent;
@@ -18,19 +15,28 @@ import patrolin.stablefps.StableFPS.GrabMouseEvent;
 import patrolin.stablefps.StableFPS.ShouldCloseEvent;
 import patrolin.stablefps.StableFPS.RenderThreadEvent;
 import patrolin.stablefps.StableFPS.ResizeDisplayEvent;
+import java.util.concurrent.TimeUnit;
+import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 @Mixin(Window.class)
 public class WindowMixin {
 	// inputThread
 	@Redirect(
 		method="<init>",
-		at=@At(value="INVOKE", target="Lnet/minecraftforge/fml/loading/ImmediateWindowHandler;setupMinecraftWindow(Ljava/util/function/IntSupplier;Ljava/util/function/IntSupplier;Ljava/util/function/Supplier;Ljava/util/function/LongSupplier;)J", remap = false)
+		at=@At(value="INVOKE", target="Lnet/minecraftforge/fml/loading/ImmediateWindowHandler;setupMinecraftWindow(Ljava/util/function/IntSupplier;Ljava/util/function/IntSupplier;Ljava/util/function/Supplier;Ljava/util/function/LongSupplier;)J", remap=true)
 	)
 	private long setupMinecraftWindow(IntSupplier width, IntSupplier height, Supplier<String> title, LongSupplier monitor) {
 		StableFPS.inputThread = new Thread(() -> {
 			try {
-				StableFPS.window = ForgeWindowAccessor.recreateWindow();
+				// open the window
+				StableFPS.window = ForgeWindowAccessor.recreateForgeWindow(width.getAsInt(), height.getAsInt(), title.get(), monitor.getAsLong(), 0L);
+				GLFW.glfwPollEvents(); /* NOTE: prevent race condition with initializing GLFW */
 				StableFPS.window_ready.countDown();
+				while (!StableFPS.forge_is_setup.await(0, TimeUnit.MILLISECONDS)) {
+					GLFW.glfwPollEvents();
+				}
 				while (true) {
 					// handle inputThread events
 					InputThreadEvent event;
@@ -57,20 +63,22 @@ public class WindowMixin {
 				System.exit(1);
 			}
 		}, "Async input thread");
+		StableFPS.inputThread.start();
 		// wait for the window to be opened
 		try {
-			ForgeWindowAccessor.closeOldWindow();
-			StableFPS.inputThread.start();
 			StableFPS.window_ready.await();
-			net.minecraftforge.fml.loading.ImmediateWindowHandler.setupMinecraftWindow(width, height, title, monitor);
-		} catch (InterruptedException e) {
+			//long forgeEarlyWindow = net.minecraftforge.fml.loading.ImmediateWindowHandler.setupMinecraftWindow(width, height, title, monitor);
+			ForgeWindowAccessor.closeForgeEarlyWindow();
+			ForgeWindowAccessor.recreateForgeFramebuffer(StableFPS.window);
+			StableFPS.forge_is_setup.countDown();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return StableFPS.window;
 	}
 	@Redirect(
-			method="onFramebufferResize",
-			at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/WindowEventHandler;resizeDisplay()V")
+		method="onFramebufferResize",
+		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/WindowEventHandler;resizeDisplay()V")
 	)
 	private void onFramebufferResize(WindowEventHandler eventHandler) {
 		StableFPS.resizeDisplay(eventHandler);

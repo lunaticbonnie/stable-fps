@@ -1,3 +1,4 @@
 import net.fabricmc.api.ModInitializer; import net.minecraftforge.fml.common.Mod;\nimport net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 public class StableFPS implements ModInitializer; @Mod(StableFPS.MOD_ID)\npublic final class StableFPS
 @Override\s+public void onInitialize\(\) {}; public StableFPS(FMLJavaModLoadingContext context) {}
+window_ready; window_ready = new CountDownLatch(1);\n  public static final CountDownLatch forge_is_setup

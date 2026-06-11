@@ -18,7 +18,6 @@ build-version:
   $$GRADLEW --stop
   $$GRADLEW --stop
   python change_version.py $$ARGS
-  $$GRADLEW --refresh-dependencies
   $$GRADLEW runClient
   $$GRADLEW build
   cp current/build/libs/$modid-$version.jar "dist/$modid-$version+$$ARGS.jar"
