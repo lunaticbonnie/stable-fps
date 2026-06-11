@@ -43,3 +43,4 @@ Minecraft 1.21.9 and above has F3 menu on the main menu
 - neoforge versions?
 - more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
 - ship image with forge versions
+- fix image in fabric versions
