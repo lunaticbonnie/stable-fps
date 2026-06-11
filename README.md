@@ -38,6 +38,7 @@ Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
 
 ### Todo list
+- fix crash on early cursorEntered()...
 - neoforge versions?
 - more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
 - can we actually get the forge early loading window to close instead of just hiding it?
