@@ -8,10 +8,10 @@ NOTE: You may experience graphical glitches when starting the game or resizing t
 
 Compatible with Sodium.
 
+Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps) and [Modrinth](https://modrinth.com/mod/stablefps-xyz).
+
 NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those...
 NOTE: `neoforged` is broken for version `1.20.5`, so we can't support that...
-
-Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps) and [Modrinth](https://modrinth.com/mod/stablefps-xyz).
 
 ## dev
 Download https://github.com/Patrolin/justice
