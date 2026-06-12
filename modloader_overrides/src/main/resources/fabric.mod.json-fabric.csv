@@ -2,8 +2,8 @@ examplemod.mixins.json; $modid.mixins.json
 com.examplemod.ExampleMod; $entrypoint
 ExampleMod; $modname
 examplemod; $modid
-"CC0-1\.0"; "$license"
-"description": [^\n]+; "description": "$description",
-"Me!"; "$authorname"
-"homepage": [^\n]+; "homepage": "$homepage",
-"sources": [^\n]+; "issues": "$issues"
+"license": .+$; "license": "$license",
+"description": .+$; "description": "$description",
+"authors": [^\]]+\],; "authors": ["$authorname"],
+"homepage": .+$; "homepage": "$homepage",
+"sources": .+$; "issues": "$issues"
