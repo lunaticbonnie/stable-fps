@@ -44,21 +44,25 @@ class PathInfo:
     is_dir = os.path.isdir(self.path)
     name = self.name
     early_type_order = 1
-    late_type_order = 0
+    type_order = 0
     if self.name.endswith(".renamefrom"):
       name = name[:-len(".renamefrom")]
       early_type_order = 0
+    elif self.name.endswith(".csv"):
+      name = name[:-len(".csv")]
+      type_order = 1
     elif self.name.endswith(".renameto"):
       name = name[:-len(".renameto")]
-      late_type_order = 2
+      type_order = 2
     elif self.name.endswith(".remove"):
       name = name[:-len(".remove")]
-      late_type_order = 3
+      type_order = 3
     elif self.name.endswith(".softremove"):
       name = name[:-len(".softremove")]
-      late_type_order = 4
+      type_order = 4
     version = parse_version(self.version)
-    return [is_dir, early_type_order, name, late_type_order, version.modloader, version.comparison == "+", version.numbers, version.continued]
+    print(name, [is_dir, early_type_order, name, type_order, version.modloader, version.comparison == "+", version.numbers, version.continued])
+    return [is_dir, early_type_order, name, type_order, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
 @dataclass
 class Version:
@@ -107,9 +111,20 @@ def version_matches(src_version_string: str, dest_version_string: str) -> bool:
     raise ValueError(f"Invalid src_version: '{src_version_string}'")
 
 late_removes: list[str] = []
+def replace_variables(string: str) -> str:
+  while (match := re.search(r"\$[A-Za-z0-9_]+", string)) != None:
+    variable_name = match.group(0)[1:]
+    try:
+      value = env[variable_name]
+    except KeyError:
+      print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
+      exit(1)
+    string = string[:match.start(0)] + value + string[match.end(0):]
+  return string
 def apply_overrides(src: PathInfo, dest: PathInfo):
   if not version_matches(src.version, dest.version):
     return
+  print(f"+ {src.path}")
   if os.path.isdir(src.path):
     # make directory
     try:
@@ -119,7 +134,6 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
     # recurse
     path_infos = [src.plus_versioned(name) for name in os.listdir(src.path)]
     for info in sorted(path_infos, key=lambda info: info.get_override_order()):
-      print(f"+ {info.path}")
       apply_overrides(info, dest.plus(info.name))
   else:
     # apply file override
@@ -142,14 +156,7 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
           left, right = split
           left = left.strip()
           right = right.strip()
-          while (match := re.search(r"\$[A-Za-z0-9_]+", right)) != None:
-            variable_name = match.group(0)[1:]
-            try:
-              value = env[variable_name]
-            except KeyError:
-              print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
-              exit(1)
-            right = right[:match.start(0)] + value + right[match.end(0):]
+          right = replace_variables(right)
           right = right.replace("\\n", "\n")
           print(f"  '{left}' -> '{right}'")
           content = re.sub(left, lambda _match: right, content, 0, re.MULTILINE)
@@ -174,18 +181,18 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
       print(f"  '{from_path}' -> '{to_path}'")
       clean_path(to_path, False)
       os.rename(from_path, to_path)
-      time.sleep(1e-3)
-    elif src.name.endswith(".rename"):
-      from_path = dest.path[:-len(".rename")]
+      time.sleep(1e-3) # NOTE: fix race condition with file system
+    elif src.name.endswith(".renameto"):
+      from_path = dest.path[:-len(".renameto")]
       dest_dir = from_path.rsplit("/", 1)[0]
       dest_name = ""
       with open(src.path, "r") as src_file:
-        dest_name = src_file.read().strip()
+        dest_name = replace_variables(src_file.read().strip())
       to_path = f"{dest_dir}/{dest_name}"
       print(f"  '{from_path}' -> '{to_path}'")
       clean_path(to_path, False)
       os.rename(from_path, to_path)
-      time.sleep(1e-3)
+      time.sleep(1e-3) # NOTE: fix race condition with file system
     else:
       src_file.close()
       src_file = open(src.path, "rb")
@@ -238,6 +245,7 @@ if __name__ == "__main__":
             if line.startswith(f"{key}="):
               env[key.lower()] = line[len(key)+1:-1]
     clean_template()
-    apply_overrides(PathInfo.from_dir_path("overrides"), PathInfo.from_dir_path("current", target_version))
+    for src_path in ["modloader_overrides", "mod_overrides"]:
+      apply_overrides(PathInfo.from_dir_path(src_path), PathInfo.from_dir_path("current", target_version))
     for path in late_removes:
       clean_path(path, True)

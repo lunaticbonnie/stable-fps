@@ -1,0 +1,3 @@
+version: '.+'$; version: '$minecraft_version'
+version = .+$; version = '$version'
+group = '.+'$; group = '$authorid.$modid'

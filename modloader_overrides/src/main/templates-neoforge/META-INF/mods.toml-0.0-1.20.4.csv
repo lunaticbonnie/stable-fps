@@ -1,0 +1,5 @@
+examplemod; $modid
+authors=.+$; authors="$authorname"
+description='''[\s\S]+?'''; description='''$description'''
+#issueTrackerURL=.+$; issueTrackerURL="$issues"
+#displayURL=.+$; displayURL="$homepage"
