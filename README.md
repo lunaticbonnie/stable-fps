@@ -10,46 +10,54 @@ Compatible with Sodium.
 
 Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps) and [Modrinth](https://modrinth.com/mod/stablefps-xyz).
 
-NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those...
+NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those... \
 NOTE: `neoforged` is broken for version `1.20.5`, so we can't support that...
 
 ## dev
+```
 Download https://github.com/Patrolin/justice
 Download Python 3
 Download mod templates for all desired Minecraft versions into `templates/*` from:
-    a) https://fabricmc.net/develop/template/
-        Mod Name="ExampleMod"
-        Package Name="com.examplemod"
-        Minecraft Version=...
-        Split client and common sources=false
-    b) https://files.minecraftforge.net/net/minecraftforge/forge/
-    c) https://neoforged.net/mod-generator/
-        Mod Name="ExampleMod"
-        Package Name="com.examplemod"
-        Minecraft Version=...
-        Mod Authors="Me!"
-        Mod Description="Description"
-        Advanced Options.Add mixin configuration=true
-`ice change-version` to list versions
-`ice change-version <version>` to change to the selected version
-`ice run` or Open `./current` in IntelliJ IDEA and run `runClient` gradle task
+  a) https://fabricmc.net/develop/template/
+    Mod Name="ExampleMod"
+    Package Name="com.examplemod"
+    Minecraft Version=...
+    Split client and common sources=false
+  b) https://files.minecraftforge.net/net/minecraftforge/forge/
+  c) https://neoforged.net/mod-generator/
+    Mod Name="ExampleMod"
+    Package Name="com.examplemod"
+    Minecraft Version=...
+    Mod Authors="Me!"
+    Mod Description="Description"
+    Advanced Options.Add mixin configuration=true
+```
+`ice change-version` to list versions \
+`ice change-version <version>` to change to the selected version \
+`ice run` or Open `./current` in IntelliJ IDEA and run `runClient` gradle task \
 `ice build-version <version>` to run and build the selected version
 
 ### Run with tracy profiler
-Download some verson of tracy
+```
+Download some version of tracy profiler
 Add `--tracy` to application args
 Run tracy
-- Check if protocol version matches, else download different version of tracy...
-- Connect
+  Check if protocol version matches, else download different version of tracy...
+  Connect
+```
 
 ### Java versions
+```
 Java 25 for Minecraft 26.1 and later
 Java 21 for Minecraft 1.20.5 to 1.21.11
 Java 17 for Minecraft 1.17 to 1.20.4
 Java 8 for Minecraft 1.16 and earlier
+```
 
 ### Minecraft versions
+```
 Minecraft 1.21.9 and above has F3 menu on the main menu
+```
 
 ### Todo list
 - neoforge versions?
