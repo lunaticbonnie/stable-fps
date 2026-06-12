@@ -209,7 +209,7 @@ if __name__ == "__main__":
   # find matching template
   found_templates = []
   for name in os.listdir("templates"):
-    if re.match(rf"{target_version}[-\.]", name) != None:
+    if re.match(rf"{target_version}(?:-|.zip)", name) != None:
       found_templates.append(name)
   assertf(len(found_templates) == 1, f"found_templates: {found_templates}")
   template_name = found_templates[0]
