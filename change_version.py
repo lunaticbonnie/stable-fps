@@ -12,19 +12,19 @@ def assertf(condition: bool, string: str):
     print(f"\033[31m{string}\033[0m")
     exit(1)
 
-def clean_path(path: str, expect_exists = False):
+def clean_path(path: str, expect_exists: bool):
   if len(path) <= 4: raise ValueError(f"Suspicious path: '{path}'")
   if os.path.isdir(path):
     for path_name in os.listdir(path):
-      clean_path(f"{path}/{path_name}")
+      clean_path(f"{path}/{path_name}", False)
     os.rmdir(path)
   elif expect_exists:
     os.remove(path)
   elif os.path.exists(path):
     os.remove(path)
 def clean_template():
-  clean_path("current/.github")
-  clean_path("current/README.md")
+  clean_path("current/.github", False)
+  clean_path("current/README.md", False)
 
 @dataclass
 class PathInfo:
@@ -106,7 +106,10 @@ def version_matches(src_version_string: str, dest_version_string: str) -> bool:
   else:
     raise ValueError(f"Invalid src_version: '{src_version_string}'")
 
+late_removes: list[str] = []
 def apply_overrides(src: PathInfo, dest: PathInfo):
+  if not version_matches(src.version, dest.version):
+    return
   if os.path.isdir(src.path):
     # make directory
     try:
@@ -121,71 +124,73 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
   else:
     # apply file override
     src_file = open(src.path, "r")
-    if version_matches(src.version, dest.version):
-      if src.name.endswith(".csv"):
-        dest.path = dest.path[:-len(".csv")]
-        content = ""
-        with open(dest.path, "r", encoding="utf8") as dest_file:
-          content = dest_file.read() # NOTE: Python automatically converts "\r\n" to "\n"
-        splitter = ";"
-        with open(src.path, "r") as src_file:
-          for line in src_file.readlines():
-            if not line.strip(): continue
-            split = line.split(splitter, 1)
-            if len(split) == 1:
-              splitter = line.strip()
-              continue
-            else:
-              assertf(len(split) == 2, f"Invalid replace(\"{splitter}\"): '{line.strip()}'")
-            left, right = split
-            left = left.strip()
-            right = right.strip()
-            while (match := re.search(r"\$[A-Za-z0-9_]+", right)) != None:
-              variable_name = match.group(0)[1:]
-              try:
-                value = env[variable_name]
-              except KeyError:
-                print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
-                exit(1)
-              right = right[:match.start(0)] + value + right[match.end(0):]
-            right = right.replace("\\n", "\n")
-            print(f"  '{left}' -> '{right}'")
-            content = re.sub(left, lambda _match: right, content, 0, re.MULTILINE)
-        with open(dest.path, "w") as dest_file:
-          dest_file.write(content) # NOTE: Python automatically converts "\n" back to "\r\n"
-      elif src.name.endswith(".remove"):
-        dest.path = dest.path[:-len(".remove")]
-        clean_path(dest.path, True)
-      elif src.name.endswith(".softremove"):
-        dest.path = dest.path[:-len(".remove")]
-        clean_path(dest.path, False)
-      elif src.name.endswith(".renamefrom"):
-        to_path = dest.path[:-len(".renamefrom")]
-        dest_dir = to_path.rsplit("/", 1)[0]
-        dest_name = ""
-        with open(src.path, "r") as src_file:
-          dest_name = src_file.read().strip()
-        from_path = f"{dest_dir}/{dest_name}"
-        print(f"  '{from_path}' -> '{to_path}'")
-        clean_path(to_path, False)
-        os.rename(from_path, to_path)
-        time.sleep(1e-3)
-      elif src.name.endswith(".rename"):
-        from_path = dest.path[:-len(".rename")]
-        dest_dir = from_path.rsplit("/", 1)[0]
-        dest_name = ""
-        with open(src.path, "r") as src_file:
-          dest_name = src_file.read().strip()
-        to_path = f"{dest_dir}/{dest_name}"
-        print(f"  '{from_path}' -> '{to_path}'")
-        clean_path(to_path, False)
-        os.rename(from_path, to_path)
-        time.sleep(1e-3)
-      else:
-        src_file.close()
-        src_file = open(src.path, "rb")
-        with open(dest.path, "wb+") as dest_file:
-          dest_file.write(src_file.read())
+    if src.name.endswith(".csv"):
+      dest.path = dest.path[:-len(".csv")]
+      content = ""
+      with open(dest.path, "r", encoding="utf8") as dest_file:
+        content = dest_file.read() # NOTE: Python automatically converts "\r\n" to "\n"
+      splitter = ";"
+      with open(src.path, "r") as src_file:
+        for line in src_file.readlines():
+          if not line.strip(): continue
+          split = line.split(splitter, 1)
+          if len(split) == 1:
+            splitter = line.strip()
+            continue
+          else:
+            assertf(len(split) == 2, f"Invalid replace(\"{splitter}\"): '{line.strip()}'")
+          left, right = split
+          left = left.strip()
+          right = right.strip()
+          while (match := re.search(r"\$[A-Za-z0-9_]+", right)) != None:
+            variable_name = match.group(0)[1:]
+            try:
+              value = env[variable_name]
+            except KeyError:
+              print(f"  '{left}' -> \033[31m${variable_name}\033[0m")
+              exit(1)
+            right = right[:match.start(0)] + value + right[match.end(0):]
+          right = right.replace("\\n", "\n")
+          print(f"  '{left}' -> '{right}'")
+          content = re.sub(left, lambda _match: right, content, 0, re.MULTILINE)
+      with open(dest.path, "w") as dest_file:
+        dest_file.write(content) # NOTE: Python automatically converts "\n" back to "\r\n"
+    elif src.name.endswith(".remove"):
+      dest.path = dest.path[:-len(".remove")]
+      clean_path(dest.path, True)
+    elif src.name.endswith(".softremove"):
+      dest.path = dest.path[:-len(".remove")]
+      clean_path(dest.path, False)
+    elif src.name.endswith(".lateremove"):
+      dest.path = dest.path[:-len(".lateremove")]
+      late_removes.append(dest.path)
+    elif src.name.endswith(".renamefrom"):
+      to_path = dest.path[:-len(".renamefrom")]
+      dest_dir = to_path.rsplit("/", 1)[0]
+      dest_name = ""
+      with open(src.path, "r") as src_file:
+        dest_name = src_file.read().strip()
+      from_path = f"{dest_dir}/{dest_name}"
+      print(f"  '{from_path}' -> '{to_path}'")
+      clean_path(to_path, False)
+      os.rename(from_path, to_path)
+      time.sleep(1e-3)
+    elif src.name.endswith(".rename"):
+      from_path = dest.path[:-len(".rename")]
+      dest_dir = from_path.rsplit("/", 1)[0]
+      dest_name = ""
+      with open(src.path, "r") as src_file:
+        dest_name = src_file.read().strip()
+      to_path = f"{dest_dir}/{dest_name}"
+      print(f"  '{from_path}' -> '{to_path}'")
+      clean_path(to_path, False)
+      os.rename(from_path, to_path)
+      time.sleep(1e-3)
+    else:
+      src_file.close()
+      src_file = open(src.path, "rb")
+      with open(dest.path, "wb+") as dest_file:
+        dest_file.write(src_file.read())
     src_file.close()
 
 if __name__ == "__main__":
@@ -216,7 +221,7 @@ if __name__ == "__main__":
   template_path = f"templates/{template_name}"
   template_name = template_name.rsplit(".", 1)[0]
   # change to the specified version
-  clean_path("current")
+  clean_path("current", False)
   if target_version != "clean":
     with ZipFile(template_path) as z:
       z.extractall("current")
@@ -234,3 +239,5 @@ if __name__ == "__main__":
               env[key.lower()] = line[len(key)+1:-1]
     clean_template()
     apply_overrides(PathInfo.from_dir_path("overrides"), PathInfo.from_dir_path("current", target_version))
+    for path in late_removes:
+      clean_path(path, True)

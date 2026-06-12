@@ -1,0 +1,5 @@
+->
+import net.fabricmc.api.ModInitializer; -> import net.neoforged.bus.api.IEventBus;\nimport net.neoforged.fml.ModContainer;\nimport net.neoforged.fml.common.Mod;
+public class StableFPS implements ModInitializer -> @Mod(StableFPS.MOD_ID)\npublic final class StableFPS
+@Override\s+public void onInitialize\(\) {} -> public StableFPS(IEventBus ignoredModEventBus, ModContainer ignoredModContainer) {}
+window_ready -> window_ready = new CountDownLatch(1);\n  public static final CountDownLatch forge_is_setup

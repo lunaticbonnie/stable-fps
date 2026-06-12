@@ -1,0 +1,5 @@
+mod_name=.+$; mod_name=$modname
+mod_id=.+$; mod_id=$modid
+mod_license=.+$; mod_license=$license
+mod_version=.+$; mod_version=$version
+mod_group_id=.+$; mod_group_id=$authorid.$modid
