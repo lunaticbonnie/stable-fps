@@ -9,8 +9,9 @@ import patrolin.stablefps.StableFPS;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
+  /* TODO: in what mc version does this become public? */
   @Inject(method="close", at=@At("HEAD"))
-  private static void onClose(CallbackInfo ci) {
+  private void onClose(CallbackInfo ci) {
     StableFPS.shouldClose();
   }
 }

@@ -60,15 +60,6 @@ public class NeoforgeWindowAccessor {
     GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
     return GLFW.glfwCreateWindow(width[0], height[0], title, monitor, share);
   }
-  private static ScheduledExecutorService mockScheduler = Executors.newSingleThreadScheduledExecutor(
-      Thread.ofPlatform()
-          .name("stablefps-loadingscreen")
-          .daemon()
-          .uncaughtExceptionHandler((t, e) -> {
-            System.err.println("Uncaught error on background rendering thread: " + e);
-            e.printStackTrace();
-          })
-          .factory());
   public static void closeForgeEarlyWindow() {
     try {
       DisplayWindow displayWindow = getDisplayWindow();
