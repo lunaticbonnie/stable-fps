@@ -162,15 +162,6 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
           content = re.sub(left, lambda _match: right, content, 0, re.MULTILINE)
       with open(dest.path, "w") as dest_file:
         dest_file.write(content) # NOTE: Python automatically converts "\n" back to "\r\n"
-    elif src.name.endswith(".remove"):
-      dest.path = dest.path[:-len(".remove")]
-      clean_path(dest.path, True)
-    elif src.name.endswith(".softremove"):
-      dest.path = dest.path[:-len(".remove")]
-      clean_path(dest.path, False)
-    elif src.name.endswith(".lateremove"):
-      dest.path = dest.path[:-len(".lateremove")]
-      late_removes.append(dest.path)
     elif src.name.endswith(".renamefrom"):
       to_path = dest.path[:-len(".renamefrom")]
       dest_dir = to_path.rsplit("/", 1)[0]
@@ -193,6 +184,15 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
       clean_path(to_path, False)
       os.rename(from_path, to_path)
       time.sleep(1e-3) # NOTE: fix race condition with file system
+    elif src.name.endswith(".remove"):
+      dest.path = dest.path[:-len(".remove")]
+      clean_path(dest.path, True)
+    elif src.name.endswith(".softremove"):
+      dest.path = dest.path[:-len(".softremove")]
+      clean_path(dest.path, False)
+    elif src.name.endswith(".lateremove"):
+      dest.path = dest.path[:-len(".lateremove")]
+      late_removes.append(dest.path)
     else:
       src_file.close()
       src_file = open(src.path, "rb")
