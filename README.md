@@ -10,8 +10,13 @@ Compatible with Sodium.
 
 Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps) and [Modrinth](https://modrinth.com/mod/stablefps-xyz).
 
-NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1`, `1.17`, so we can't support those... \
+NOTE: `fabric-api` is broken for versions `1.16`, `1.16.1` and `1.17`, so we can't support those... \
 NOTE: `neoforged` is broken for version `1.20.5`, so we can't support that...
+
+## Todo list
+- more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
+- ship proper mod logo?
+- fix remaining weird 5 fps drop on forge/neoforge
 
 ## dev
 ```
@@ -58,9 +63,3 @@ Java 8 for Minecraft 1.16 and earlier
 ```
 Minecraft 1.21.9 and above has F3 menu on the main menu
 ```
-
-### Todo list
-- neoforge versions?
-- more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
-- ship image with forge versions
-- fix image in fabric versions
