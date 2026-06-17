@@ -5,8 +5,15 @@ stop:
 clean:
   $$GRADLEW --stop
   python change_version.py clean
-change-version:
-  python change_version.py $$ARGS
+list:
+  python change_version.py
+fabric:
+  python change_version.py fabric-$$ARGS
+  $$GRADLEW genSources
+forge:
+  python change_version.py forge-$$ARGS
+neoforge:
+  python change_version.py neoforge-$$ARGS
 run:
   $$GRADLEW runClient
 build:

@@ -61,7 +61,6 @@ class PathInfo:
       name = name[:-len(".softremove")]
       type_order = 4
     version = parse_version(self.version)
-    print(name, [is_dir, early_type_order, name, type_order, version.modloader, version.comparison == "+", version.numbers, version.continued])
     return [is_dir, early_type_order, name, type_order, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
 @dataclass

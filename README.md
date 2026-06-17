@@ -37,8 +37,8 @@ Download mod templates for all desired Minecraft versions into `templates/*` fro
     Mod Description="Description"
     Advanced Options.Add mixin configuration=true
 ```
-`ice change-version` to list versions \
-`ice change-version <version>` to change to the selected version \
+`ice list` to list versions \
+`ice <fabric|forge|neoforge> <mc_version>` to change to the selected version \
 `ice run` or Open `./current` in IntelliJ IDEA and run `runClient` gradle task \
 `ice build-version <version>` to run and build the selected version
 
