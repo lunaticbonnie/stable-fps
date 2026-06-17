@@ -12,8 +12,8 @@ Recommended settings:
 - `Fullscreen: ON` (due to Minecraft using `Hardware: Legacy Flip` on Windows)
 - `VSync: ON` (to not waste time rendering frames that won't be shown)
 - In Vanilla: `Max Framerate: Unlimited` (due to Vanilla fps limiter being broken)
-- On Fabric: `Max Framerate: any`
-- On Forge/NeoForge: `Max Framerate: lower?` (due to Forge renderer being slow)
+- With Stable FPS: `Max Framerate: any`
+NOTE: Some versions of Minecraft have a slow renderer, so you may need to limit your fps further on those.
 
 Available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/stable-fps) and [Modrinth](https://modrinth.com/mod/stablefps-xyz).
 
