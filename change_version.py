@@ -51,15 +51,18 @@ class PathInfo:
     elif self.name.endswith(".csv"):
       name = name[:-len(".csv")]
       type_order = 1
+    elif self.name.endswith(".append"):
+      name = name[:-len(".append")]
+      type_order = 2
     elif self.name.endswith(".renameto"):
       name = name[:-len(".renameto")]
-      type_order = 2
+      type_order = 3
     elif self.name.endswith(".remove"):
       name = name[:-len(".remove")]
-      type_order = 3
+      type_order = 4
     elif self.name.endswith(".softremove"):
       name = name[:-len(".softremove")]
-      type_order = 4
+      type_order = 5
     version = parse_version(self.version)
     return [is_dir, early_type_order, name, type_order, version.modloader, version.comparison == "+", version.numbers, version.continued]
 
@@ -192,6 +195,11 @@ def apply_overrides(src: PathInfo, dest: PathInfo):
     elif src.name.endswith(".lateremove"):
       dest.path = dest.path[:-len(".lateremove")]
       late_removes.append(dest.path)
+    elif src.name.endswith(".append"):
+      dest.path = dest.path[:-len(".append")]
+      assertf(os.path.exists(dest.path), f"Cannot append to nonexistent file: '{dest.path}'")
+      with open(dest.path, "a") as dest_file:
+        dest_file.write(src_file.read())
     else:
       src_file.close()
       src_file = open(src.path, "rb")
