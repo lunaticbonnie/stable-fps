@@ -22,7 +22,7 @@ NOTE: `neoforged` is broken for version `1.20.5`, so we can't support that...
 
 ## Todo list
 - more forge versions when fg7 (forge-gradle) is updated to support mixins in every minecraft version
-- apparently the early `cursorEntered` crash is still not fixed somehow?
+- apparently the forge/neoforge early `cursorEntered` crash is still not fixed somehow?
 
 ## dev
 ```
