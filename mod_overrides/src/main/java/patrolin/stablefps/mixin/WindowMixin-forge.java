@@ -59,6 +59,8 @@ public class WindowMixin {
 					}
 					// handle window events
 					GLFW.glfwPollEvents();
+					// PERF: reduce CPU burn
+					Thread.sleep(1);
 				}
 			} catch (Exception err) {
 				StableFPS.LOGGER.error("", err);
