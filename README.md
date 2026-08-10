@@ -6,7 +6,8 @@ Minecraft mod to fix long-standing FPS stability issues.
 
 NOTE: You may experience graphical glitches when starting the game or resizing the window - this is intentional, as it would require a ton of work to fix and I want to keep the changes to a minimum to be compatible with other mods.
 
-Compatible with Sodium.
+Compatible with Sodium. \
+For a version compatible with Ixeris, see [Lite FPS](https://github.com/lunaticbonnie/lite-fps).
 
 Recommended settings:
 - `Fullscreen: ON` (due to Minecraft using `Hardware: Legacy Flip` on Windows)
